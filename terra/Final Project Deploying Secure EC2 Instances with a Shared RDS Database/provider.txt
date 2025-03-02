@@ -1,0 +1,7 @@
+First, create a provider.tf file which contains the details of the AWS provider and enables connection with Terraform.
+
+provider "aws" {
+  region                  = "us-east-1"
+  access_key              = "AKIAW3MD7JOLSOSPTEML"
+  secret_key              = "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"
+}

@@ -1,0 +1,243 @@
+Configure a VPC named AppVPC with a CIDR block of 10.0.0.0/16 and enable both DNS support and DNS hostnames.
+
+
+Note: Ensure the VPC is correctly identified with the tag Name set to 'AppVPC'.
+
+resource "aws_vpc" "AppVPC" {
+  cidr_block           = "10.0.0.0/16"
+  enable_dns_support   = true
+  enable_dns_hostnames = true
+
+  tags = {
+    Name = "AppVPC"
+  }
+}
+
+##Create two subnets within AppVPC, one in us-east-1a with CIDR 10.0.1.0/24 and another in us-east-1b with CIDR 10.0.2.0/24.
+
+Tag each subnet with Name 'AppSubnet1' and 'AppSubnet2', respectively.#
+
+Add the following resource blocks to create subnet:
+
+resource "aws_subnet" "AppSubnet1" {
+  vpc_id            = aws_vpc.AppVPC.id
+  cidr_block        = "10.0.1.0/24"
+  availability_zone = "us-east-1a"
+
+  tags = {
+    Name = "AppSubnet1"
+  }
+}
+
+resource "aws_subnet" "AppSubnet2" {
+  vpc_id            = aws_vpc.AppVPC.id
+  cidr_block        = "10.0.2.0/24"
+  availability_zone = "us-east-1b"
+
+  tags = {
+    Name = "AppSubnet2"
+  }
+}
+
+Set up a security group within AppVPC that allows web traffic on TCP ports 22, 80, 443 and 3306 from anywhere. Also, it should allow external traffic to all IPs.
+
+Name the security group as WebTrafficSG.
+
+Append the following to the already created Terraform config file or create a new one:
+
+resource "aws_security_group" "WebTrafficSG" {
+  vpc_id = aws_vpc.AppVPC.id
+  name   = "WebTrafficSG"
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "WebTrafficSG"
+  }
+}
+
+Create two network interfaces - nw-interface1 and nw-interface2.
+
+Both of the interfaces should use WebTrafficSG as the security group, while the nw-interface1 should use AppSubnet1 and nw-interface2 use AppSubnet2 respectively.
+
+
+Note: The names for the interfaces should be their tags.
+
+resource "aws_network_interface" "nw-interface1" {
+  subnet_id = aws_subnet.AppSubnet1.id
+  security_groups = [aws_security_group.WebTrafficSG.id]
+  tags = {
+    Name        = "nw-interface1"
+  }  
+}
+
+resource "aws_network_interface" "nw-interface2" {
+  subnet_id = aws_subnet.AppSubnet2.id
+  security_groups = [aws_security_group.WebTrafficSG.id]
+  tags = {
+    Name        = "nw-interface2"
+  }  
+}
+
+Attach the network (AppVPC) to any Internet Gateway. Tag this gateway as AppInternetGateway.
+
+Also, create a route table for the VPC AppVPC. Tag this table as AppRouteTable. Create an associated output for this ID named route_table_ID.
+
+
+resource "aws_internet_gateway" "AppIGW" {
+  vpc_id = aws_vpc.AppVPC.id
+
+  tags = {
+    Name = "AppInternetGateway"
+  }
+}
+
+resource "aws_route_table" "AppRouteTable" {
+  vpc_id = aws_vpc.AppVPC.id
+  tags = {
+    Name = "AppRouteTable"
+  }
+}
+
+output "route_table_ID" {
+  value = aws_route_table.AppRouteTable.id
+}
+
+Create a route in your AWS infrastructure to allow internet access. The route should be associated with the route table named AppRouteTable and should direct traffic to the internet gateway named AppInternetGateway.
+
+Set the destination CIDR block to 0.0.0.0/0 to allow all outbound traffic.
+
+resource "aws_route" "internet_access" {
+  route_table_id         = aws_route_table.AppRouteTable.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.AppIGW.id
+}
+
+Associate two subnets, AppSubnet1 and AppSubnet2, with the route table named AppRouteTable to ensure that the subnets use this route table for their traffic routing.
+
+resource "aws_route_table_association" "AppSubnet1_association" {
+  subnet_id      = aws_subnet.AppSubnet1.id
+  route_table_id = aws_route_table.AppRouteTable.id
+}
+
+resource "aws_route_table_association" "AppSubnet2_association" {
+  subnet_id      = aws_subnet.AppSubnet2.id
+  route_table_id = aws_route_table.AppRouteTable.id
+}
+
+To ensure that our future EC2 instances get assigned a public IP address, create two Elastic IP (EIP) resources and attach to one network interface each - nw-interface1 andnw-interface2 .
+
+
+resource "aws_eip" "public_ip1" {
+  vpc = true
+  network_interface = aws_network_interface.nw-interface1.id
+}
+
+resource "aws_eip" "public_ip2" {
+  vpc = true
+  network_interface = aws_network_interface.nw-interface2.id
+}
+
+Create two EC2 instances within AppVPC, one in each subnet (AppSubnet1 and AppSubnet2), using the ami-06c68f701d8090592 AMI and t2.micro instance type.
+
+Create a key-pair for the EC2 instances called my-ec2-key. Store it in /root. Use this key-pair for both the EC2 instances.
+
+Tag the instances with Name as WebServer1 (AppSubnet1) and WebServer2 (AppSubnet2) respectively.
+
+Attach the appropriate network interfaces to each instance according to their subnet ID.
+
+aws ec2 create-key-pair --key-name my-ec2-key --query 'KeyMaterial' --output text > /root/my-ec2-key.pem
+
+chmod 600 /root/my-ec2-key.pem
+
+ec2 creation
+
+resource "aws_instance" "WebServer1" {
+  ami             = "ami-06c68f701d8090592"
+  instance_type   = "t2.micro"
+
+  network_interface {
+    network_interface_id = aws_network_interface.nw-interface1.id
+    device_index = 0
+  }
+
+  key_name = "my-ec2-key"
+
+  tags = {
+    Name = "WebServer1"
+  }
+}
+
+resource "aws_instance" "WebServer2" {
+  ami             = "ami-06c68f701d8090592"
+  instance_type   = "t2.micro"
+
+  network_interface {
+    network_interface_id = aws_network_interface.nw-interface2.id
+    device_index = 0
+  }
+
+  key_name = "my-ec2-key"
+
+  tags = {
+    Name = "WebServer2"
+  }
+}
+
+Add two outputs to the configuration that contain the instance IDs of the created EC2 instances.
+
+Name the outputs as instance1_id and instance2_id respectively.
+
+output "instance1_id" {
+  value = aws_instance.WebServer1.id
+}
+
+output "instance2_id" {
+  value = aws_instance.WebServer2.id
+}
+
+We will now be provisioning an RDS database instance. We want this instance to be accessible from the security group of the web servers.
+
+Create a database subnet group called app-db-subnet-group which should include the subnets within the VPC AppVPC.
+
+resource "aws_db_subnet_group" "app_db_subnet_group" {
+  name       = "app-db-subnet-group"
+  subnet_ids = [aws_subnet.AppSubnet1.id, aws_subnet.AppSubnet2.id]  
+
+  tags = {
+    Name = "AppDBSubnetGroup"
+  }
+}
