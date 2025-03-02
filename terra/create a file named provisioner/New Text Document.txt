@@ -1,0 +1,21 @@
+Use an appropriate provisioner to create a file named provisioner.txt containing the text "Provisioning successful". This file should be created after the creation of a null resource called local_null_resource on the instance where Terraform apply is run.
+
+
+Note: Name the Terraform configuration file as local.tf.
+
+Ans
+
+Within the terraform-projects folder, create the following local.tf file:
+
+resource "null_resource" "local_null_resource" {
+  provisioner "local-exec" {
+    command = "echo 'Provisioning successful' > provisioner.txt"
+  }
+}
+
+Initialize the directory:
+
+terraform init
+And apply the configuration:
+
+terraform apply
