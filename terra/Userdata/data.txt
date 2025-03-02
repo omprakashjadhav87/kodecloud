@@ -1,0 +1,16 @@
+We have created a new EC2 instance tagged CLI-Instance using the AWS CLI.
+
+Create a file named data.tf which defines an output called nontf_instance_ip. The value of the output should be the display name of this EC2 instance.
+
+
+Note: The instance has not been created using Terraform.
+root@aws-client ~/terraform-projects via 💠 default on ☁️  (us-east-1) ➜  ls
+data.tf  local.tf  main.tf  provider.tf  provisioner.txt  terraform.tfstate  terraform.tfstate.backup  terraform.tfstate.d
+
+data "aws_instance" "new_instance" {
+  instance_id = "<ID_from_console>"
+}
+
+output "nontf_instance_ip" {
+  value = data.aws_instance.new_instance.public_ip
+}
