@@ -1,0 +1,6 @@
+## cd /root/.aws ##
+provider "aws" {
+  region                  = "us-east-1"
+  access_key              = "AKIA4WJPWOOVGU75EAWI"
+  secret_key              = "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"
+}
