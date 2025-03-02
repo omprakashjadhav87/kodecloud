@@ -1,0 +1,39 @@
+Organize Jenkins Jobs with Folders
+
+xFusionCorp Industries' DevOps team aims to streamline the management of Jenkins jobs by organizing them into distinct folders based on their purpose. Complete the task following the provided requirements:
+
+
+
+1.Access the Jenkins UI by clicking on the Jenkins button in the top bar. Log in using the credentials: username admin and password Adm!n321.
+
+2. Create a new folder named Apache within the Jenkins UI.
+
+3. Move the existing jobs httpd-php and services under the newly created Apache folder.
+
+Note:
+
+1. Ensure to install any required plugins and restart the Jenkins service if necessary. Opt for Restart Jenkins when installation is complete and no jobs are running on the plugin installation/update page.
+
+2. Be aware that Jenkins UI may experience temporary unresponsiveness during the service restart. Refresh the UI page if needed.
+
+3. Capture screenshots of your work for documentation and review purposes. Alternatively, utilize screen recording software like loom.com for detailed documentation and sharing.
+
+Ans:- 
+Creating a new folder in Jenkins is straightforward. Here are the steps to create a folder named "Apache":
+
+Access Jenkins:
+
+Open your web browser and go to your Jenkins server URL.
+Log in with your credentials (username: admin, password: Adm!n321).
+Create the Folder:
+
+Once logged in, click on the New Item link on the left-hand side of the Jenkins dashboard.
+In the "Enter an item name" field, type Apache.
+Select the Folder option from the list of item types.
+Click the OK button.
+Configure the Folder:
+
+You will be taken to the folder configuration page.
+Configure any additional settings if needed (though the default settings are usually sufficient).
+Click Save to create the folder.
+Your new folder named "Apache" should now be visible in the Jenkins dashboard. 

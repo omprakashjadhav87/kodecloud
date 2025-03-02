@@ -1,0 +1,124 @@
+Configure Jenkins User Access
+
+
+The Nautilus team is integrating Jenkins into their CI/CD pipelines. After setting up a new Jenkins server, they're now configuring user access for the development team, Follow these steps:
+
+
+
+1. Click on the Jenkins button on the top bar to access the Jenkins UI. Login with username admin and password Adm!n321.
+
+2. Create a jenkins user named kirsty with the passwordTmPcZjtRQx. Their full name should match Kirsty.
+
+3. Utilize the Project-based Matrix Authorization Strategy to assign overall read permission to the kirsty user.
+
+4. Remove all permissions for Anonymous users (if any) ensuring that the admin user retains overall Administer permissions.
+
+5. For the existing job, grant kirsty user only read permissions, disregarding other permissions such as Agent, SCM etc.
+
+
+Note:
+
+1. You may need to install plugins and restart Jenkins service. After plugins installation, select Restart Jenkins when installation is complete and no jobs are running on plugin installation/update page.
+
+
+2. After restarting the Jenkins service, wait for the Jenkins login page to reappear before proceeding. Avoid clicking Finish immediately after restarting the service.
+
+
+3. Capture screenshots of your configuration for review purposes. Consider using screen recording software like loom.com for documentation and sharing.
+
+Ans:- 
+
+Access Jenkins UI:
+
+Click on the Jenkins button on the top bar.
+Login using the username admin and password Adm!n321.
+Install Git and GitLab Plugins:
+
+Once logged in, navigate to Manage Jenkins from the left sidebar.
+Click on Manage Plugins.
+Go to the Available tab.
+In the search box, type Git Plugin and select it from the list.
+Similarly, search for GitLab Plugin and select it.
+Click on Install without restart or Download now and install after restart.
+If prompted, opt to Restart Jenkins when installation is complete and no jobs are running.
+Post-Installation:
+
+After restarting Jenkins, wait for the login page to reappear.
+Log back in to verify the plugins are installed correctly.
+Documentation:
+
+Capture screenshots of each step for review.
+Consider using screen recording software like Loom for documentation and sharing.
+If you encounter any issues or need further assistance, feel free to ask! 😊
+
+
+Edit in Pages
+
+
+
+
+AI-generated content may be incorrect
+You said:
+
+The Nautilus team is integrating Jenkins into their CI/CD pipelines. After setting up a new Jenkins server, they're now configuring user access for the development team, Follow these steps:
+
+
+
+1. Click on the Jenkins button on the top bar to access the Jenkins UI. Login with username admin and password Adm!n321.
+
+2. Create a jenkins user named kirsty with the passwordTmPcZjtRQx. Their full name should match Kirsty.
+
+3. Utilize the Project-based Matrix Authorization Strategy to assign overall read permission to the kirsty user.
+
+4. Remove all permissions for Anonymous users (if any) ensuring that the admin user retains overall Administer permissions.
+
+5. For the existing job, grant kirsty user only read permissions, disregarding other permissions such as Agent, SCM etc.
+
+
+Note:
+
+1. You may need to install plugins and restart Jenkins service. After plugins installation, select Restart Jenkins when installation is complete and no jobs are running on plugin installation/update page.
+
+
+2. After restarting the Jenkins service, wait for the Jenkins login page to reappear before proceeding. Avoid clicking Finish immediately after restarting the service.
+Copilot said:
+Copilot
+Sure, I can help you with configuring user access for the development team on your Jenkins server. Here are the steps:
+
+Access Jenkins UI:
+
+Click on the Jenkins button on the top bar.
+Login using the username admin and password Adm!n321.
+Create a New User:
+
+Navigate to Manage Jenkins from the left sidebar.
+Click on Manage Users.
+Click on Create User.
+Enter the following details:
+Username: kirsty
+Password: TmPcZjtRQx
+Confirm Password: TmPcZjtRQx
+Full Name: Kirsty
+Email Address: (optional)
+Click on Create User.
+Configure Project-based Matrix Authorization Strategy:
+
+Go to Manage Jenkins.
+Click on Configure Global Security.
+Under Authorization, select Project-based Matrix Authorization Strategy.
+In the matrix, add the user kirsty and assign Overall Read permission.
+Remove all permissions for Anonymous users.
+Ensure the admin user retains Overall Administer permissions.
+Click on Save.
+Grant Job-specific Permissions:
+
+Navigate to the specific job you want to configure.
+Click on Configure.
+Scroll down to the Build Triggers section.
+Under Project-based Matrix Authorization Strategy, add the user kirsty and assign Read permission.
+Click on Save.
+Restart Jenkins (if required):
+
+If you need to install any plugins, go to Manage Jenkins > Manage Plugins.
+Install the necessary plugins and select Restart Jenkins when installation is complete and no jobs are running.
+Wait for the Jenkins login page to reappear before proceeding.
