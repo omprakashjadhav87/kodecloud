@@ -1,0 +1,20 @@
+
+Service User Creation without Home Directory.
+
+In response to the latest tool implementation at xFusionCorp Industries, the system admins require the creation of a service user account. Here are the specifics:
+
+Create a user named jim in App Server 2 without a home directory.
+
+Ans:- 
+
+To create a user named jim on App Server 2 without a home directory, you can use the following command:
+
+sudo useradd -M jim
+
+Here's a breakdown of the command:
+
+sudo: Runs the command with superuser privileges.
+useradd: The command to add a new user.
+-M: Prevents the creation of a home directory for the user.
+jim: The username.
+Make sure to run this command on App Server 2.

@@ -1,0 +1,16 @@
+Create a user named jim on App Server 3 in Stratos Datacenter. Set the expiry date to 2024-04-15, ensuring the user is created in lowercase as per standard protocol.
+
+Ans:- 
+
+Access App Server 3:
+
+Use SSH or your preferred method to connect to App Server 3.
+Create the User:
+
+Run the following command to create the user jim:
+sudo useradd -e 2024-04-15 jim
+Verify the User Creation:
+
+Check if the user has been created with the correct expiry date:
+sudo chage -l jim
+This will display the details of the user jim, including the account expiry date.
