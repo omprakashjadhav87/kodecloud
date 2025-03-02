@@ -1,0 +1,25 @@
+Deploy Nginx Container on Application Server.
+
+container named nginx_1 using the nginx image with the alpine tag. Ensure container is in a running state.
+
+To create a container named nginx_1 using the nginx image with the alpine tag and ensure it is in a running state, you can use the following docker command:
+
+Step-by-Step Instructions
+Pull the Nginx Alpine Image (optional, Docker will pull it automatically if not already available):
+
+docker pull nginx:alpine
+Create and Run the Container:
+
+docker run -d --name nginx_1 nginx:alpine
+
+Explanation
+docker run: Command to create and run a new container.
+-d: Run the container in detached mode (in the background).
+--name nginx_1: Assign the name nginx_1 to the container.
+nginx:alpine: Specify the image to use (nginx with the alpine tag).
+
+Verify the Container is Running
+To ensure the container is in a running state, you can use the following command:
+
+docker ps
+This command lists all running containers. You should see nginx_1 in the list with the status indicating it is up and running.
