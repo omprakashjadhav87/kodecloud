@@ -1,3 +1,4 @@
+Final Project Deploying Secure EC2 Instances with a Shared RDS Database
 provider "aws" {
   region     = "us-east-1"
   access_key = "AKIA6GBMDRB2GZTUJ3SX"
