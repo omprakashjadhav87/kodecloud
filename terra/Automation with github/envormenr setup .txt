@@ -1,0 +1,5 @@
+vi /root/github_repo_info.json
+{
+    "REPO_OWNER": "omprakashjadhav87",
+    "ACCESS_TOKEN": "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"
+}

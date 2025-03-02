@@ -1,0 +1,23 @@
+Clone the terraform-infra repository within root in the terminal.
+
+The public ssh key has already been generated for you at /root/.ssh/id_rsa.pub. Use the SSH URL from the output that you generated in the previous task.
+
+Copy the public key:
+cat .ssh/id_rsa.pub
+Go to GitHub and log in to your account.
+
+Click on your profile picture in the upper-right corner.
+Go to Settings. In the left sidebar, click on SSH and GPG keys.
+
+Click the New SSH key button. Paste your public key into the Key field. Add a descriptive title for the key.
+Click Add SSH key.
+
+To get the URL in your case, run the following command in the terraform-projects folder:
+
+terraform output -raw repository_clone_url_ssh
+Finally, run the clone command:
+git clone git@github.com:your_username/your_repository.git
+Enter yes when you receive this prompt:
+
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+And your repository will be cloned.

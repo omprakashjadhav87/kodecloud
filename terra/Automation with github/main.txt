@@ -1,0 +1,18 @@
+root@aws-client ~/terraform-projects via 💠 default on ☁️  (us-east-1) ➜  ls
+main.tf  provider.tf  terraform.tfstate  terraform.tfstate.backup
+
+provider "github" {
+  token = "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"
+}
+
+resource "github_repository" "terraform-infra-repo" {
+  name        = "terraform-infra"
+  description = "Infrastructure repository managed by Terraform"
+  visibility  = "public" 
+  has_issues  = true
+  has_wiki    = true
+}
+
+output "repository_clone_url_ssh" {
+  value = github_repository.terraform-infra-repo.ssh_clone_url
+}
