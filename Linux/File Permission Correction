@@ -1,1 +1,37 @@
-After conducting a security audit within the Stratos DC, the Nautilus security team discovered misconfigured permissions on critical files. To address this, corrective actions are being taken by the production support team. Specifically, the file named /etc/resolv.conf on Nautilus App 3 server requires adjustments to its Access Control Lists (ACLs) as follows:
+After conducting a security audit within the Stratos DC, the Nautilus security team discovered misconfigured permissions on critical files.
+
+To address this, corrective actions are being taken by the production support team. Specifically, the file named /etc/resolv.
+
+conf on Nautilus App 3 server requires adjustments to its Access Control Lists (ACLs) as follows:
+
+1. The file's user owner and group owner should be set to root.
+
+2. Others should possess read only permissions on the file.
+
+3. User james must not have any permissions on the file.
+
+4. User jerome should be granted read only permission on the file.
+
+Ans:- 
+
+you need to run to adjust the ACLs on the /etc/resolv.conf file on the Nautilus App 3 server:
+
+Set the user owner and group owner to root:
+sudo chown root:root /etc/resolv.conf
+
+To set read-only permissions for others using numerical format, you can use the following command:
+
+sudo chmod 744 /etc/resolv.conf
+In this command, 744 sets the permissions as follows:
+
+7 for the owner (read, write, execute)
+4 for the group (read-only)
+4 for others (read-only)
+
+To remove all permissions for user james
+sudo setfacl -m u:james:0 /etc/resolv.conf
+
+Grant read-only permission to user jerome (numerical format):
+sudo setfacl -m u:jerome:4 /etc/resolv.conf
+
+
