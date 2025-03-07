@@ -1,1 +1,1 @@
-
+After conducting a security audit within the Stratos DC, the Nautilus security team discovered misconfigured permissions on critical files. To address this, corrective actions are being taken by the production support team. Specifically, the file named /etc/resolv.conf on Nautilus App 3 server requires adjustments to its Access Control Lists (ACLs) as follows:
