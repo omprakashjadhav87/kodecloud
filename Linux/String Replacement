@@ -1,1 +1,18 @@
+within the Stratos DC, the backup server holds template XML files crucial for the Nautilus application. Before utilization, these files require
+valid data insertion. As part of routine maintenance, system admins at xFusionCorp Industries employ string and file manipulation commands.
 
+Your task is to substitute all occurrences of the string Text with Submarine within the XML file located at /root/nautilus.xml on the backup
+ server.
+
+Ans:- 
+
+To substitute all occurrences of the string "Text" with "Submarine" within the XML file located at /root/nautilus.xml on the backup server, you can use the sed command. Here is the command you need to run:
+
+sudo sed -i 's/Text/Submarine/g' /root/nautilus.xml
+
+This command will:
+sudo: Run the command with superuser privileges.
+sed: Stream editor for filtering and transforming text.
+-i: Edit the file in place.
+'s/Text/Submarine/g': Substitute all occurrences of "Text" with "Submarine" globally in the file.
+/root/nautilus.xml: The path to the XML file.
