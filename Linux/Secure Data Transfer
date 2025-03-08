@@ -1,0 +1,13 @@
+To transfer the file from the jump server to App Server 3, follow these steps:
+
+Log in to the jump server:
+
+ssh jump_user@jump_server_ip
+Copy the file to App Server 3 using scp:
+
+scp /tmp/nautilus.txt.gpg app_user@app_server_3_ip:/home/web/
+Verify the file transfer by logging into App Server 3:
+
+ssh app_user@app_server_3_ip
+ls /home/web/nautilus.txt.gpg
+Make sure you have the necessary permissions and credentials to perform these actions.
