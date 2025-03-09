@@ -1,0 +1,22 @@
+In alignment with security compliance standards, the Nautilus project team has opted to impose restrictions on crontab access. Specifically,
+only designated users will be permitted to create or update cron jobs.
+Configure crontab access on App Server 3 as follows: Allow crontab access to mariyam user while denying access to the rod user.
+
+Ans:- 
+To configure crontab access on App Server 3, you can follow similar steps as before using the cron.allow and cron.deny files. Here are the steps:
+
+Allow crontab access to the mariyam user:
+
+Open the cron.allow file using a text editor:
+sudo nano /etc/cron.allow
+Add the mariyam user to the file:
+mariyam
+Save and close the file.
+Deny crontab access to the rod user:
+
+Open the cron.deny file using a text editor:
+sudo nano /etc/cron.deny
+Add the rod user to the file:
+rod
+Save and close the file.
+These steps will ensure that only the mariyam user can create or update cron jobs, while the rod user will be denied access.
