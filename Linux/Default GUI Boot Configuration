@@ -6,3 +6,17 @@ Adjust the default runlevel on all App servers in Stratos Datacenter to enable G
 
 Ans:- 
 
+To adjust the default runlevel to enable GUI booting all apps server by default without rebooting the servers, you can follow these steps:
+
+Check the current runlevel on all apps server. 
+
+run below all cmd on all apps servers
+systemctl get-default
+Change the default runlevel to graphical.target:
+
+sudo systemctl set-default graphical.target
+Verify the change:
+
+systemctl get-default
+These commands will set the all apps server system to boot into the GUI by default without requiring a reboot. 
+
