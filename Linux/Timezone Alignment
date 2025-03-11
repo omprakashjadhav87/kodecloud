@@ -1,0 +1,21 @@
+To synchronize the timezone settings across the Nautilus Application Servers to match the local datacenter's timezone (Pacific/Port_Moresby), you can follow these steps:
+
+Connect to each server:
+
+Use SSH to connect to each Nautilus Application Server.
+Check the current timezone:
+
+Run the command:
+timedatectl
+This will display the current timezone settings.
+Set the timezone to Pacific/Port_Moresby:
+
+Run the command:
+sudo timedatectl set-timezone Pacific/Port_Moresby
+Verify the change:
+
+Run the command again to ensure the timezone has been updated:
+timedatectl
+Repeat for all servers:
+
+Ensure you perform these steps on each server in the Stratos Datacenter.
