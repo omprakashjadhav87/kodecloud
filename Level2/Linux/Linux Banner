@@ -1,0 +1,25 @@
+During the monthly compliance meeting, it was pointed out that several servers in the Stratos DC do not have a valid banner. The security team has provided serveral approved templates which should be applied to the servers to maintain compliance. These will be displayed to the user upon a successful login.
+Update the message of the day on all application and db servers for Nautilus. Make use of the approved template located at /home/thor/nautilus_banner on jump host
+
+Ans:- 
+
+Copy the File to a Temporary Location:
+
+First, copy the file to a directory where the user tony/steve and banner ,peter  has write permissions, such as their home directory:
+sudo scp /home/thor/nautilus_banner tony@172.16.238.10:/home/tony/nautilus_banner
+
+Log in to the all aps Server one by one and also DB server :
+
+SSH into the target server as the user tony:
+ssh tony@172.16.238.10
+Move the File with sudo:
+
+Once logged in, use sudo to move the file to /etc/motd:
+sudo mv /home/tony/nautilus_banner /etc/motd
+Verify the Update:
+
+Check that the file has been updated correctly:
+cat /etc/motd
+Log Out and Log Back In:
+
+Ensure the new banner is displayed by logging out and logging back in.
