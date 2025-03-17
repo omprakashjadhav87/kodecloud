@@ -1,0 +1,19 @@
+The Nautilus team doesn't want its data to be accessed by any of the other groups/teams due to security reasons and want their data to be strictly accessed by the sysadmin group of the team.
+Setup a collaborative directory /sysadmin/data on app server 2 in Stratos Datacenter.
+The directory should be group owned by the group sysadmin and the group should own the files inside the directory. The directory should be read/write/execute to the user and group owners, and others should not have any access.
+Ans:
+Here's how you can set up the collaborative directory with the specified permissions:
+Create the directory:
+
+sudo mkdir -p /sysadmin/data
+
+Set the group ownership to sysadmin:
+sudo chown :sysadmin /sysadmin/data
+
+Set the permissions so that only the user and group owners have read, write, and execute permissions:
+sudo chmod 770 /sysadmin/data
+
+Ensure that new files created in the directory inherit the group ownership:
+sudo chmod g+s /sysadmin/data
+
+This setup ensures that the sysadmin group owns the directory and files within it, and only members of this group have access. Other users will not have any permissions to access the directory.
