@@ -1,0 +1,17 @@
+There is some data on Nautilus App Server 2 in Stratos DC. Data needs to be altered in several of the files. On Nautilus App Server 2, alter the /home/BSD.txt file as per details given below:
+a. Delete all lines containing word software and save results in /home/BSD_DELETE.txt file. (Please be aware of case sensitivity)
+b. Replace all occurrence of word and to is and save results in /home/BSD_REPLACE.txt file.
+Note: Let's say you are asked to replace word to with from. In that case, make sure not to alter any words containing the string itself; for example upto, contributor etc.
+
+Ans:- 
+Task a: Delete all lines containing the word "software" and save the results in /home/BSD_DELETE.txt
+
+sudo sed '/software/d' /home/BSD.txt | sudo tee /home/BSD_DELETE.txt
+
+sudo chown yourusername /home/BSD_DELETE.txt
+sudo chmod u+w /home/BSD_DELETE.txt
+
+Task b: Replace all occurrences of the word "and" with "is" and save the results in /home/BSD_REPLACE.txt
+sudo sed 's/\band\b/is/g' /home/BSD.txt | sudo tee /home/BSD_REPLACE.txt
+
+These commands will ensure that the operations are performed correctly, respecting case sensitivity and word boundaries
