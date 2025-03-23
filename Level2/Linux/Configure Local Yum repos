@@ -1,0 +1,35 @@
+The Nautilus production support team and security team had a meeting last month in which they decided to use local yum repositories for maintaing packages needed for their servers.
+For now they have decided to configure a local yum repo on Nautilus Backup Server. This is one of the pending items from last month, so please configure a local yum repository
+on Nautilus Backup Server as per details given below.
+a. We have some packages already present at location /packages/downloaded_rpms/ on Nautilus Backup Server.
+b. Create a yum repo named local_yum and make sure to set Repository ID to local_yum. Configure it to use package's location /packages/downloaded_rpms/.
+c. Install package vim-enhanced from this newly created repo.
+Ans:- 
+Here are the steps to configure a local yum repository on the Nautilus Backup Server:
+
+Create the repository configuration file:
+
+Open a terminal on the Nautilus Backup Server.
+
+Create a new repository configuration file in the /etc/yum.repos.d/ directory. You can name it local_yum.repo.
+sudo vi /etc/yum.repos.d/local_yum.repo
+
+Add the repository details:
+Add the following content to the local_yum.repo file:
+[local_yum]
+name=Local Yum Repository
+baseurl=file:///packages/downloaded_rpms/
+enabled=1
+gpgcheck=0
+Save and close the file.
+Clean and update yum cache:
+
+Run the following commands to clean and update the yum cache:
+sudo yum clean all
+sudo yum makecache
+
+Install the vim-enhanced package:
+Now, you can install the vim-enhanced package from the newly created local repository:
+sudo yum install vim-enhanced
+
+These steps should configure the local yum repository and install the vim-enhanced package successfully. 
