@@ -1,0 +1,20 @@
+We have some users on all app servers in Stratos Datacenter. Some of them have been assigned some new roles and responsibilities, therefore their users need to be upgraded with sudo access so that they can perform admin level tasks.
+a. Provide sudo access to user siva on all app servers.
+b. Make sure you have set up password-less sudo for the user.
+Ans:- 
+Sure, I can help you with that! Here are the steps to provide sudo access and set up password-less sudo for the user siva on all app servers:
+
+Step 1: Provide sudo access to user siva
+Edit the sudoers file:
+Open the sudoers file using the visudo command:
+sudo visudo
+Add the following line to grant siva sudo access:
+siva ALL=(ALL) ALL
+
+Step 2: Set up password-less sudo for user siva
+Edit the sudoers file again:
+Open the sudoers file using the visudo command:
+sudo visudo
+Add the following line to enable password-less sudo for siva:
+siva ALL=(ALL) NOPASSWD:ALL
+
