@@ -1,0 +1,18 @@
+The system admins team of xFusionCorp Industries has noticed intermittent issues with DNS resolution in several apps . 
+App Server 3 in Stratos Datacenter is having some DNS resolution issues, so we want to add some additional DNS nameservers on this server.
+As a temporary fix we have decided to go with Google public DNS (ipv4). Please make appropriate changes on this server.
+
+Ans:-
+
+I can guide you through the process of adding Google public DNS nameservers to App Server 3. Here are the steps:
+
+Access the server: Log in to App Server 3 using SSH or any other method you prefer.
+
+Edit the DNS configuration file: Open the /etc/resolv.conf file in a text editor. You can use nano, vim, or any other editor you are comfortable with. For example, using nano:
+
+sudo vi /etc/resolv.conf
+Add Google DNS nameservers: Add the following lines to the file to use Google's public DNS servers:
+
+nameserver 8.8.8.8
+nameserver 8.8.4.4
+Save and exit: Save the changes and exit the text editor. If you are using nano, you can do this by pressing Ctrl + O to save and Ctrl + X to exit.
