@@ -1,0 +1,40 @@
+To secure our Nautilus infrastructure in Stratos Datacenter we have decided to install and configure firewalld on all app servers. We have Apache and Nginx services running on these apps. Nginx is running as a reverse proxy server for Apache. We might have more robust firewall settings in the future, but for now we have decided to go with the given requirements listed below.
+
+a. Allow all incoming connections on Nginx port, i.e 80.
+
+b. Block all incoming connections on Apache port, i.e 8080.
+
+c. All rules must be permanent.
+
+d. Zone should be public.
+
+e. If Apache or Nginx services aren't running already, please make sure to start them.
+
+Ans:- 
+Install firewalld (if not already installed):
+
+sudo yum install firewalld -y  # For RHEL/CentOS
+
+Start and enable firewalld:
+
+sudo systemctl start firewalld
+sudo systemctl enable firewalld
+
+Allow incoming connections on Nginx port (80):
+
+sudo firewall-cmd --zone=public --add-port=80/tcp --permanent
+Block incoming connections on Apache port (8080):
+
+sudo firewall-cmd --zone=public --remove-port=8080/tcp --permanent
+Reload firewalld to apply the changes:
+
+sudo firewall-cmd --reload
+Ensure Apache and Nginx services are running:
+
+sudo systemctl start nginx
+sudo systemctl enable nginx
+
+sudo systemctl start httpd  # For Apache on RHEL/CentOS
+sudo systemctl enable httpd
+
+This should configure your firewall as per the requirements. 
