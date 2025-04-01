@@ -1,0 +1,25 @@
+There is a critical issue going on with the Nautilus application in Stratos DC. The production support team identified that the application is unable to connect to the database. After digging into the issue, the team found that mariadb service is down on the database server.
+
+Look into the issue and fix the same.
+
+Ans:- 
+
+Check the MariaDB Service Status:
+
+Open your terminal and run:
+sudo systemctl status mariadb
+
+Examine System Logs:
+
+sudo cat /var/log/mariadb/mariadb.log
+
+Permission Issues: Ensure the MariaDB data directory and configuration files have the correct permissions.
+
+sudo mkdir /var/lib/mysql
+sudo chown -R mysql:mysql /var/lib/mysql
+sudo chown mysql:mysql /var/run/mariadb
+
+Restart MariaDB: Try restarting the MariaDB service:
+sudo systemctl restart mariadb
+
+These steps should help you resolve the issue. 
