@@ -1,0 +1,40 @@
+We are working on hardening Apache web server on all app servers. As a part of this process we want to add some of the Apache response headers for security purpose.
+We are testing the settings one by one on all app servers. As per details mentioned below enable these headers for Apache:
+Install httpd package on App Server 1 using yum and configure it to run on 5002 port, make sure to start its service.
+Create an index.html file under Apache's default document root i.e /var/www/html and add below given content in it.
+Welcome to the xFusionCorp Industries!
+Configure Apache to enable below mentioned headers:
+X-XSS-Protection header with value 1; mode=block
+X-Frame-Options header with value SAMEORIGIN
+X-Content-Type-Options header with value nosniff
+Note: You can test using curl on the given app server as LBR URL will not work for this task.
+
+Ans:- 
+
+I can help you with that! Here are the steps to achieve this:
+
+Install the httpd package and configure it to run on port 5002:
+sudo yum install httpd -y
+sudo sed -i 's/^Listen 80/Listen 5002/' /etc/httpd/conf/httpd.conf
+sudo systemctl start httpd
+sudo systemctl enable httpd
+
+
+Create the index.html file under Apache's default document root (/var/www/html/index.html)
+
+echo "Welcome to the xFusionCorp Industries!" | sudo tee
+
+Configure Apache to enable the specified headers:
+
+Open the Apache configuration file (usually located at /etc/httpd/conf/httpd.conf) and add the following lines:
+<IfModule mod_headers.c>
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-Content-Type-Options "nosniff"
+</IfModule>
+
+Restart Apache to apply the changes:
+
+Test the headers using curl:
+
+This should display the headers in the response. 
