@@ -1,0 +1,23 @@
+One of the Nautilus developer was working to test new changes on a container. He wants to keep a backup of his changes to the container.
+A new request has been raised for the DevOps team to create a new image from this container. Below are more details about it:
+a. Create an image blog:nautilus on Application Server 1 from a container ubuntu_latest that is running on same server.
+
+Ans:-
+
+ I can help with that! Here are the steps to create a new Docker image from the running container ubuntu_latest on Application Server 1:
+
+Log in to Application Server 1:
+
+ssh user@application_server_1
+
+Check the running containers to ensure ubuntu_latest is running:
+docker ps
+
+Commit the running container ubuntu_latest to a new image blog:nautilus:
+docker commit ubuntu_latest blog:nautilus
+
+Verify the new image has been created:
+
+docker images
+
+This will create a new Docker image blog:nautilus from the current state of the ubuntu_latest container.
