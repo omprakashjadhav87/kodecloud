@@ -1,0 +1,41 @@
+The Nautilus DevOps team is ready to launch a new application, which they will deploy on app servers in Stratos Datacenter. They are expecting significant traffic/usage of haproxy on app servers after that. This will generate massive logs, creating huge log files. To utilise the storage efficiently, they need to compress the log files and need to rotate old logs. 
+Check the requirements shared below:
+a. In all app servers install haproxy package.
+
+b. Using logrotate configure haproxy logs rotation to monthly and keep only 3 rotated logs.
+(If by default log rotation is set, then please update configuration as needed)
+
+Solns:-
+
+Task: Prepare App Servers for High Traffic.
+
+Install haproxy Package:
+
+On all app servers, execute the following command to install haproxy:
+sudo yum install haproxy
+
+Configuring Log Rotation
+
+Regardless of the package manager, you can configure log rotation using logrotate. Here’s how to set it up:
+
+Create or Update Logrotate Configuration:
+Open the logrotate configuration file for haproxy
+
+sudo nano /etc/logrotate.d/haproxy
+
+/var/log/haproxy.log {
+    monthly
+    rotate 3
+    compress
+    missingok
+    notifempty
+    create 0640 root root
+    postrotate
+        /usr/sbin/service haproxy reload > /dev/null
+    endscript
+}
+
+
+=======
+
+This setup ensures that your haproxy logs are rotated monthly, compressed, and only the last three logs are kept, optimizing your storage usage.
