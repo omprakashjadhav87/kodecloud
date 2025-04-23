@@ -15,3 +15,16 @@ Verify the ConfigMap name: Ensure the correct name is "redis-config" and not "re
 
 Update the deployment YAML file: If the ConfigMap name was incorrect, update the deployment file and apply the changes:
 
+Restart the Deployment: If you made any changes, restart the deployment:
+kubectl rollout restart deployment redis-deployment
+
+Monitor the Pods: Keep an eye on the pods to see if they come up:
+kubectl get pods -w
+
+Update the Deployment YAML File:
+
+kubectl edit deployment redis-deployment
+
+and fix the correct image name alpine.
+
+
