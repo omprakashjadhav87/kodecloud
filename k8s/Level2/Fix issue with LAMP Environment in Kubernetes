@@ -1,0 +1,72 @@
+One of the DevOps team member was trying to install a WordPress website on a LAMP stack which is essentially deployed on Kubernetes cluster.
+It was working well and we could see the installation page a few hours ago. However something is messed up with the stack now due to a website went down. 
+Please look into the issue and fix it:
+FYI, deployment name is lamp-wp and its using a service named lamp-service. The Apache is using http default port and nodeport is 30008.
+From the application logs it has been identified that application is facing some issues while connecting to the database in addition to other issues.
+Additionally, there are some environment variables associated with the pods like MYSQL_ROOT_PASSWORD, MYSQL_DATABASE,  MYSQL_USER, MYSQL_PASSWORD, MYSQL_HOST.
+Also do not try to delete/modify any other existing components like deployment name, service name, types, labels etc.
+Note: The kubectl utility on jump_host has been configured to work with the kubernetes cluster.
+
+Solution:
+
+Let's troubleshoot and fix the issues step-by-step:
+
+Step 1: Edit the Service Port
+
+First, change the service port from 8080 to 80:
+
+kubectl edit svc lamp-service
+
+In the editor, find the ports section and change the port from 8080 to 80:
+
+ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30008
+
+
+Save and exit the editor.
+
+Step 2: Check the Logs
+
+Next, check the logs for the httpd-php-container:
+
+kubectl logs lamp-wp-56c7c454fc-z95vp -c httpd-php-container
+you should see errors related to undefined indexes and MySQL connection issues.
+
+Step 3: Fix Syntax Errors in /app/index.php
+Exec into the httpd-php-container to edit the /app/index.php file:
+
+kubectl exec -it lamp-wp-56c7c454fc-z95vp -c httpd-php-container -- /bin/bash
+
+Once inside the container, open the /app/index.php file with a text editor (e.g., vi or nano):
+vi /app/index.php
+
+Correct the syntax errors by ensuring the environment variables are properly referenced:
+=======================================================================================
+<?php
+$dbname = $_ENV['MYSQL_DATABASE'];
+$dbuser = $_ENV['MYSQL_USER'];
+$dbpass = $_ENV[""MYSQL_PASSWORDS""];  ----- This the incorrect menoted infile this should be ( $dbpass = $_ENV['MYSQL_PASSWORDS'];
+$dbhost = $_ENV['HOST-MYQSL'];          ----- This the incorrect menoted infile this should be ( $dbhost = $_ENV['HOST_MYQSL'];
+
+
+$connect = mysqli_connect($dbhost, $dbuser, $dbpass) or die("Unable to Connect to '$dbhost'");
+
+$test_query = "SHOW TABLES FROM $dbname";
+$result = mysqli_query($test_query);
+
+if ($result->connect_error) {
+   die("Connection failed: " . $conn->connect_error);
+}
+  echo "Connected successfully";
+===========================================================
+Save the changes and exit the editor.
+
+then click on app buttion on console.
+
+get the below page
+
+=====================================================
+Connected successfully
+====================================================
