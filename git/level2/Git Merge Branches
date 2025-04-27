@@ -1,0 +1,41 @@
+The Nautilus application development team has been working on a project repository /opt/ecommerce.git. This repo is cloned at /usr/src/kodekloudrepos on storage server in Stratos DC. 
+They recently shared the following requirements with DevOps team:
+Create a new branch nautilus in /usr/src/kodekloudrepos/ecommerce repo from master and copy the /tmp/index.html file (present on storage server itself) into the repo.
+Further, add/commit this file in the new branch and merge back that branch into master branch. 
+Finally, push the changes to the origin for both of the branches.
+
+Solutions:-
+
+Navigate to the repository:
+
+cd /usr/src/kodekloudrepos/ecommerce
+
+Create a new branch nautilus from master:
+
+git checkout master
+git pull origin master
+git checkout -b nautilus
+
+
+Copy the index.html file into the repository:
+
+cp /tmp/index.html .
+
+
+Add and commit the file in the nautilus branch:
+
+git add index.html
+git commit -m "Add index.html to nautilus branch"
+
+
+Merge the nautilus branch back into master:
+
+git checkout master
+git merge nautilus
+
+Push the changes to the origin for both branches:
+
+git push origin master
+git push origin nautilus
+
+These commands will help you create the new branch, add the file, commit the changes, merge the branch back into master, and push the changes to the remote repository. 
