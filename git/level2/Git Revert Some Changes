@@ -1,0 +1,30 @@
+The Nautilus application development team was working on a git repository /usr/src/kodekloudrepos/games present on Storage server in Stratos DC. 
+However, they reported an issue with the recent commits being pushed to this repo. They have asked the DevOps team to revert repo HEAD to last commit. 
+Below are more details about the task:
+
+In /usr/src/kodekloudrepos/games git repository, revert the latest commit ( HEAD ) to the previous commit (JFYI the previous commit hash should be with initial commit message ).
+
+Use revert games message (please use all small letters for commit message) for the new revert commit.
+
+Solutions:-
+
+Navigate to the repository:
+
+cd /usr/src/kodekloudrepos/games
+
+Revert the latest commit:
+
+View the commit history to identify the previous commit:
+git log --oneline
+
+Revert the latest commit using the commit hash of the previous commit:
+git reset --hard <previous_commit_hash>
+
+Create a new commit with the revert message:
+git commit --allow-empty -m "revert games"
+
+Push the changes to the remote repository:
+git push origin main --force
+
+This method will reset the repository to the state of the previous commit and create a new commit with the specified message. 
+
