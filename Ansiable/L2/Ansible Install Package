@@ -29,9 +29,16 @@ Create the playbook file at /home/thor/playbook/playbook.yml with the following 
          name: httpd
          state: present
  ```
-4: Run the Playbook
 
+Generate a SSH key on Jump Host . Please note it should Thor user.
+ssh-keygen -t rsa -b 2048
+
+Copy SSH key to all servers setup password-less authentication to the host
+ssh-copy-id  tony@stapp01
+
+Run the Playbook
 Execute the playbook using the command:
+
 ansible-playbook -i /home/thor/playbook/inventory /home/thor/playbook/playbook.yml
 
 This setup should allow user thor to run the playbook on the jump host without needing to pass any extra arguments. 
