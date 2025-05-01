@@ -1,0 +1,37 @@
+Create an inventory file /home/thor/playbook/inventory on jump host and add all app servers in it.
+Create an Ansible playbook /home/thor/playbook/playbook.yml to install httpd package on all  app servers using Ansible yum module.
+Make sure user thor should be able to run the playbook on jump host.
+Note: Validation will try to run playbook using command ansible-playbook -i inventory playbook.yml so please make sure playbook works this way, without passing any extra arguments.
+
+Solutions:-
+
+Step 1: Create the Inventory File
+Open a terminal on the jump host.
+Create the inventory file at /home/thor/playbook/inventory and add all app servers to it. For example:
+
+
+[app_servers]
+stapp01 ansible_host=172.16.238.10 ansible_user=tony ansible_ssh_pass=Ir0nM@n
+stapp02 ansible_host=172.16.238.11 ansible_user=steve ansible_ssh_pass=Am3ric@
+stapp03 ansible_host=172.16.238.12 ansible_user=banner ansible_ssh_pass=BigGr33n
+
+Step 2: Create the Ansible Playbook
+Create the playbook file at /home/thor/playbook/playbook.yml with the following content:
+
+
+---
+ - name: Install httpd on all app servers
+   hosts: app_servers
+   become: yes
+   tasks:
+     - name: Install httpd package
+       yum:
+         name: httpd
+         state: present
+ ```
+4: Run the Playbook
+
+Execute the playbook using the command:
+ansible-playbook -i /home/thor/playbook/inventory /home/thor/playbook/playbook.yml
+
+This setup should allow user thor to run the playbook on the jump host without needing to pass any extra arguments. 
