@@ -46,11 +46,13 @@ Make sure to save this playbook as playbook.yml under /home/thor/ansible directo
 
 ================
 
+Generate a SSH key on Jump Host . Please note it should Thor user.
+ssh-keygen -t rsa -b 2048
+
+Copy SSH key to all servers setup password-less authentication to the host
+ssh-copy-id  tony@stapp01
 
 You can run the playbook using the command:
-
-ansible-playbook -i inventory playbook.yml
+sudo ansible-playbook -i inventory playbook.yml
 
 This playbook will create an archive of the /usr/src/itadmin/ directory on each app server, copy it to the /opt/itadmin/ directory, and set the appropriate ownership based on the server.
-
-If you have any further questions or need additional adjustments, feel free to ask!
