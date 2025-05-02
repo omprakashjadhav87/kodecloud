@@ -1,0 +1,56 @@
+The Nautilus DevOps team has some data on each app server in Stratos DC that they want to copy to a different location. However, they want to create an archive of the data first, 
+then they want to copy the same to a different location on the respective app server. Additionally, there are some specific requirements for each server. 
+Perform the task using Ansible playbook as per requirements mentioned below:
+Create a playbook named playbook.yml under /home/thor/ansible directory on jump host, an inventory file is already placed under /home/thor/ansible/ directory on Jump Server itself.
+Create an archive cluster.tar.gz (make sure archive format is tar.gz) of /usr/src/itadmin/ directory ( present on each app server ) and copy it to /opt/itadmin/ directory
+on all app servers. The user and group owner of archive cluster.tar.gz should be tony for App Server 1, steve for App Server 2 and banner for App Server 3.
+
+Note: Validation will try to run playbook using command ansible-playbook -i inventory playbook.yml so please make sure playbook works this way, without passing any extra arguments.
+
+Solutions:-
+
+Make sure to save this playbook as playbook.yml under /home/thor/ansible directory on the jump host. The inventory file should already be in place under the same directory.
+
+===============
+---
+- name: Create and copy archive on app servers
+  hosts: all
+  become: yes
+  tasks:
+    - name: Create archive of /usr/src/itadmin/ directory
+      archive:
+        path: /usr/src/itadmin/
+        dest: /opt/itadmin/cluster.tar.gz
+        format: gz
+
+    - name: Set ownership of the archive on App Server 1
+      file:
+        path: /opt/itadmin/cluster.tar.gz
+        owner: tony
+        group: tony
+      when: inventory_hostname == 'app_server_1'
+
+    - name: Set ownership of the archive on App Server 2
+      file:
+        path: /opt/itadmin/cluster.tar.gz
+        owner: steve
+        group: steve
+      when: inventory_hostname == 'app_server_2'
+
+    - name: Set ownership of the archive on App Server 3
+      file:
+        path: /opt/itadmin/cluster.tar.gz
+        owner: banner
+        group: banner
+      when: inventory_hostname == 'app_server_3'
+
+================
+
+
+You can run the playbook using the command:
+
+ansible-playbook -i inventory playbook.yml
+
+This playbook will create an archive of the /usr/src/itadmin/ directory on each app server, copy it to the /opt/itadmin/ directory, and set the appropriate ownership based on the server.
+
+If you have any further questions or need additional adjustments, feel free to ask!
