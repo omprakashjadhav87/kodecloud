@@ -1,0 +1,75 @@
+The Nautilus DevOps team wants to install and set up a simple httpd web server on all app servers in Stratos DC. Additionally, 
+they want to deploy a sample web page for now using Ansible only. Therefore, write the required playbook to complete this task. Find more details about the task below.
+We already have an inventory file under /home/thor/ansible directory on jump host. Create a playbook.yml under /home/thor/ansible directory on jump host itself.
+Using the playbook, install httpd web server on all app servers. Additionally, make sure its service should up and running.
+Using blockinfile Ansible module add some content in /var/www/html/index.html file. Below is the content:
+Welcome to XfusionCorp!
+This is  Nautilus sample file, created using Ansible!
+
+Please do not modify this file manually!
+
+The /var/www/html/index.html file's user and group owner should be apache on all app servers.
+The /var/www/html/index.html file's permissions should be 0644 on all app servers.
+
+Note:
+
+
+i. Validation will try to run the playbook using command ansible-playbook -i inventory playbook.yml so please make sure the playbook works this way without passing any extra arguments.
+
+
+ii. Do not use any custom or empty marker for blockinfile module.
+
+Solutions:- 
+
+Below is the Ansible playbook that meets your requirements:
+
+================================
+
+---
+- name: Install and configure httpd web server
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install httpd package
+      yum:
+        name: httpd
+        state: present
+
+    - name: Start and enable httpd service
+      systemd:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: Add content to /var/www/html/index.html
+      blockinfile:
+        path: /var/www/html/index.html
+        block: |
+          Welcome to XfusionCorp!
+          This is Nautilus sample file, created using Ansible!
+          Please do not modify this file manually!
+
+    - name: Set ownership of /var/www/html/index.html
+      file:
+        path: /var/www/html/index.html
+        owner: apache
+        group: apache
+
+    - name: Set permissions of /var/www/html/index.html
+      file:
+        path: /var/www/html/index.html
+        mode: '0644'
+=========================================================
+Save this playbook as playbook.yml under /home/thor/ansible directory on the jump host. 
+
+Generate a SSH key on Jump Host . Please note it should Thor user.
+ssh-keygen -t rsa -b 2048
+
+Copy SSH key to all servers setup password-less authentication to the host
+ssh-copy-id  tony@stapp01
+
+You can run it using the below command:
+ansible-playbook -i inventory playbook.yml
+
+This playbook will install the httpd web server, ensure the service is running, add the specified content to the index.html file, and set the correct ownership and permissions. 
