@@ -1,0 +1,74 @@
+The devops team of xFusionCorp Industries is working on to setup centralised logging management system to maintain and analyse server logs easily. Since it will take some time to implement, they wanted to gather some server logs on a regular basis. At least one of the app servers is having issues with the Apache server. The team needs Apache logs so that they can identify and troubleshoot the issues easily if they arise. So they decided to create a Jenkins job to collect logs from the server. 
+Please create/configure a Jenkins job as per details mentioned below:
+Click on the Jenkins button on the top bar to access the Jenkins UI. Login using username admin and password Adm!n321
+1. Create a Jenkins jobs named copy-logs.
+2. Configure it to periodically build every 7 minutes to copy the Apache logs (both access_log and error_logs) from App Server 2 (from default logs location) to location /usr/src/devops
+on Storage Server.
+Note:
+1. You might need to install some plugins and restart Jenkins service. So, we recommend clicking on Restart Jenkins when installation is complete and no jobs are running on plugin
+installation/update page i.e update centre. Also, Jenkins UI sometimes gets stuck when Jenkins service restarts in the back end. In this case please make sure to refresh the UI page.
+2. Please make sure to define you cron expression like this */10 * * * * (this is just an example to run job every 10 minutes).
+3. For these kind of scenarios requiring changes to be done in a web UI, please take screenshots so that you can share it with us for review in case your task is marked incomplete. 
+You may also consider using a screen recording software such as loom.com to record and share your work.
+
+Solutions:-
+
+create new credentils
+Go to "Manage Jenkins" > "Manage Plugins".>credentils > system > global credentils
+1) 
+user name :- steve
+
+PAssword:- Am3ric@
+
+2)
+User NAme :-natasha
+
+PAssword:- Bl@kW	
+
+save it 
+
+configure the ssh remote host
+Go to "Manage Jenkins" > "configure system".>
+1) 
+SSH remote host.
+hostname :- stapp02
+port: 22
+credentils:-Am3ric@
+2) 
+hostname :- ststor01
+port: 22
+credentils:- Bl@kW
+save it
+
+Access Jenkins UI:
+
+Click on the Jenkins button on the top bar.
+Login using username admin and password Adm!n321.
+
+Install Necessary Plugins:
+
+Go to "Manage Jenkins" > "Manage Plugins".
+Install any required plugins (e.g., SSH plugin ).
+Restart Jenkins if prompted.
+
+Create a Jenkins Job:
+Click on "New Item" on the Jenkins dashboard.
+Enter the name copy-logs.
+Select "Freestyle project" and click "OK".
+
+Configure the Job:
+
+In the job configuration page, go to the "Build" section.
+Click on "Add build step" and select "Execute shell script on remote host".
+Enter the following script to copy-logs and backup to storage server
+===========================================================================================================
+sshpass -p "Bl@kW" scp -o StrictHostKeyChecking=no /var/log/httpd/* natasha@ststor01:/usr/src/devops/
+=============================================================================================================
+
+Schedule the Job:
+
+In the "Build Triggers" section, check "Build periodically".
+Enter the cron expression */7 * * * * to schedule the job to run every 7 minutes.
+Save and Run the Job:
+
+You can manually run the job by clicking "Build Now" on the job page.
