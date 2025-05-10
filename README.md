@@ -28,6 +28,9 @@ Infra details: https://kodekloudhub.github.io/kodekloud-engineer/docs/projects/n
 ![image](https://github.com/user-attachments/assets/1f943bf4-5382-4405-ba4b-5e0b479a33c8)
 ![image](https://github.com/user-attachments/assets/8a19d406-86bf-4822-8bde-c6117c524c02)
 
+![image](https://github.com/user-attachments/assets/25cfa946-83f5-46f7-9c16-f516ec4083b2)
+
+
 ![image](https://github.com/user-attachments/assets/28fe3e06-26d5-448b-889d-f2771ac0f99b)
 ![image](https://github.com/user-attachments/assets/3bc53c3c-aaca-4767-a4ad-64d515cd11d2)
 
