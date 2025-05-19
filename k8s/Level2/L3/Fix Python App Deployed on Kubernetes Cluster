@@ -1,0 +1,57 @@
+One of the DevOps engineers was trying to deploy a python app on Kubernetes cluster. Unfortunately, due to some mis-configuration, the application is not coming up. Please take a look 
+into it and fix the issues. Application should be accessible on the specified nodePort.
+The deployment name is python-deployment-nautilus, its using poroko/flask-demo-appimage. The deployment and service of this app is already deployed.
+nodePort should be 32345 and targetPort should be python flask app's default port.
+Note: The kubectl on jump_host has been configured to work with the kubernetes cluster.
+
+Solutions:- 
+
+ Checklist to Verify and Fix
+Check the Deployment:
+
+Ensure the deployment python-deployment-nautilus is running and using the correct image: poroko/flask-demo-appimage.
+Check the Flask App Port:
+
+Flask apps by default run on port 5000, so the targetPort in the service should be 5000.
+Check the Service Configuration:
+
+The service should be of type NodePort.
+The nodePort should be set to 32345.
+The targetPort should be 5000.
+
+1. Verify the Deployment
+
+kubectl get deployment python-deployment-nautilus
+kubectl describe deployment python-deployment-nautilus
+
+
+2. Check the Pods
+
+kubectl get pods -l app=python-deployment-nautilus
+kubectl logs <pod-name>
+
+2. Fix the Deployment with a Valid Image
+
+kubectl edit deployment python-deployment-nautilus
+Look for the image: field under containers: and correct it.
+
+poroko/flask-demo-appimage -- correct image name .
+
+fully replace the service's port configuration to ensure it routes traffic to port 5000 inside the container.
+
+Run this command:
+
+kubectl patch svc python-service-nautilus \
+  --type='json' \
+  -p='[{"op": "replace", "path": "/spec/ports/0/targetPort", "value": 5000}, {"op": "replace", "path": "/spec/ports/0/port", "value": 80}]'
+
+
+his will:
+
+Change the targetPort to 5000 (Flask app)
+Set the service port to 80 (optional, but conventional)
+Keep the nodePort as 32345 (already correctly set)
+
+Access the App
+Now open your browser or use curl:
+
