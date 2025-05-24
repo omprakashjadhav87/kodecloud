@@ -1,0 +1,27 @@
+For this task, create a VPC named devops-vpc in the us-east-1 region with the Amazon-provided IPv6 CIDR block using terraform.
+
+The Terraform working directory is /home/bob/terraform. Create the main.tf file (do not create a different .tf file) to accomplish this task.
+
+Solutions:- 
+
+✅ Terraform Configuration to Create a VPC with IPv6
+. Create the main.tf file:
+
+resource "aws_vpc" "devops_vpc" {
+  cidr_block = "10.0.0.0/16"
+  tags = {
+    Name = "devops_vpc"
+  }
+  enable_dns_support = true
+  enable_dns_hostnames = true
+
+  assign_generated_ipv6_cidr_block = true
+}
+
+ Steps to Use This Terraform Code
+Save the code in a file, e.g., main.tf.
+Run the following commands:
+
+terraform init
+terraform plan
+terraform apply
