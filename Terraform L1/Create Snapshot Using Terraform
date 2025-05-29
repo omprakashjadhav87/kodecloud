@@ -1,0 +1,53 @@
+The Nautilus DevOps team has some volumes in different regions in their AWS account. They are going to setup some automated backups so that all important data can be backed up on 
+regular basis. For now they shared some requirements to take a snapshot of one of the volumes they have.
+
+Create a snapshot of an existing volume named nautilus-vol in us-east-1 region using terraform.
+
+1) The name of the snapshot must be nautilus-vol-ss.
+
+2) The description must be Nautilus Snapshot.
+
+3) Make sure the snapshot status is completed before submitting the task.
+
+The Terraform working directory is /home/bob/terraform. Update the main.tf file (do not create a separate .tf file) to accomplish this task.
+
+Solutions:- 
+
+To meet the requirements and create a snapshot of an existing EBS volume named nautilus-vol in the us-east-1 region using Terraform, follow these steps:
+
+✅ Step-by-Step Instructions
+1. Identify the Volume ID
+Since the volume already exists and was not created by Terraform, you need to import it into Terraform using its Volume ID.
+
+First, find the volume ID of nautilus-vol in the AWS Console under EC2 > Volumes in the us-east-1 region.
+
+Let’s assume the volume ID is vol-0abcd1234efgh5678.
+
+2. Update main.tf in /home/bob/terraform
+Here’s what your main.tf should look like:
+
+resource "aws_ebs_volume" "nautilus_vol" {
+  # Placeholder block to allow import
+  availability_zone = "us-east-1a"
+  size              = 5
+  type              = "gp2"
+
+  tags = {
+    Name = "nautilus-vol"
+  }
+}
+
+resource "aws_ebs_snapshot" "nautilus_vol_ss" {
+  volume_id   = aws_ebs_volume.nautilus_vol.id
+  description = "Nautilus Snapshot"
+
+  tags = {
+    Name = "nautilus-vol-ss"
+  }
+}
+
+
+4. Apply the Configuration
+
+terraform plan
+terraform apply
