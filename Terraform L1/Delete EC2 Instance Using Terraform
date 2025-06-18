@@ -1,0 +1,25 @@
+During the migration process, several resources were created under the AWS account. Some of these test resources are no longer needed at the moment, so we need to clean them up temporarily.
+One such instance is currently unused and should be deleted.
+1) Delete the ec2 instance named devops-ec2 present in us-east-1 region using terraform. Make sure to keep the provisioning code, as we might need to provision this instance again later.
+2) Before submitting your task, make sure instance is in terminated state.
+The Terraform working directory is /home/bob/terraform.
+Note: Right-click under the EXPLORER section in VS Code and select Open in Integrated Terminal to launch the terminal.
+
+Solutions:- 
+To delete the EC2 instance devops-ec2 while keeping the provisioning code intact, you can update your Terraform configuration to comment out or temporarily remove the aws_instance resource
+from main.tf. Then, apply the changes to ensure the instance is terminated.
+
+Steps to modify main.tf:
+If your existing Terraform code contains something like this:
+
+Instead of completely deleting this block, comment it out by adding # before each line:
+
+Run Terraform commands:
+
+terraform init
+terraform plan
+terraform apply -auto-approve
+
+Verify the instance is terminated in the AWS Console or by running:
+
+aws ec2 describe-instances --filters "Name=tag:Name,Values=devops-ec2"
