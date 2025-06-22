@@ -1,0 +1,25 @@
+The Nautilus DevOps team is presently immersed in data migrations, transferring data from on-premise storage systems to AWS S3 buckets. They have recently received some data that they intend to copy to one of the S3 buckets.
+
+S3 bucket named xfusion-cp-8496 already exists. Copy the file /tmp/xfusion.txt to s3 bucket xfusion-cp-8496 using Terraform. The Terraform working directory is /home/bob/terraform.
+Update the main.tf file (do not create a separate .tf file) to accomplish this task.
+
+Note: Right-click under the EXPLORER section in VS Code and select Open in Integrated Terminal to launch the terminal.
+
+Solutions:- 
+
+To copy a local file like /tmp/xfusion.txt to an existing S3 bucket using Terraform, you’ll need to use the aws_s3_object resource. Here's how you can modify your existing main.tf in
+/home/bob/terraform:
+
+resource "aws_s3_object" "upload_file" {
+  bucket = "xfusion-cp-8496"
+  key    = "xfusion.txt"
+  source = "/tmp/xfusion.txt"
+  etag   = filemd5("/tmp/xfusion.txt")
+}
+
+Once your main.tf is updated, follow these steps in the terminal:
+
+cd /home/bob/terraform
+terraform init
+terraform plan
+terraform apply
