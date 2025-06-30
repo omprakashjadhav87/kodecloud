@@ -1,0 +1,51 @@
+Some of the developers from Nautilus project team have asked for SFTP access to at least one of the app server in Stratos DC. After going through the requirements, the system admins team has decided to configure the SFTP server on App Server 2 server in Stratos Datacenter. Please configure it as per the following instructions:
+a. Create a SFTP user ravi and set its password to dCV3szSGNA. There is already a group called ftp, you can utilise the same.
+b. Password authentication should be enabled for this user.
+c. SFTP user should only be allowed to make SFTP connections.
+
+Solutions:- 
+
+✅ 1. Create the user ravi and assign it to group ftp
+bash
+sudo useradd -m -g ftp -s /sbin/nologin ravi
+echo "ravi:dCV3szSGNA" | sudo chpasswd
+Here, -s /sbin/nologin ensures the user can't SSH normally.
+
+✅ 2. Configure SSH for SFTP-only access
+Edit the SSH daemon configuration:
+
+bash
+sudo nano /etc/ssh/sshd_config
+Add the following block at the end of the file:
+
+Match User ravi
+    ForceCommand internal-sftp
+    PasswordAuthentication yes
+    ChrootDirectory /home/ravi
+    PermitTunnel no
+    AllowAgentForwarding no
+    AllowTcpForwarding no
+    X11Forwarding no
+
+
+sudo chown root:root /home/ravi
+sudo chmod 755 /home/ravi
+Create a writable subdirectory for ravi to use:
+
+bash
+sudo mkdir /home/ravi/files
+sudo chown ravi:ftp /home/ravi/files
+✅ 3. Restart the SSH service
+bash
+sudo systemctl restart sshd
+=========================================================================================================================================================================================
+
+test the SFTP connection for user ravi?
+
+sftp ravi@<server-ip>
+
+Replace <server-ip> with the actual IP address or hostname of App Server 2.
+
+
+It will prompt you for ravi's password — enter dCV3szSGNA.
+
