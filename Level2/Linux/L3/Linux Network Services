@@ -1,0 +1,57 @@
+Our monitoring tool has reported an issue in Stratos Datacenter. One of our app servers has an issue, as its Apache service is not reachable on port 5003 (which is the Apache port). The service itself could be down, the firewall could be at fault, or something else could be causing the issue.
+Use tools like telnet, netstat, etc. to find and fix the issue. Also make sure Apache is reachable from the jump host without compromising any security settings.
+Once fixed, you can test the same using command curl http://stapp01:5003 command from jump host.
+
+Solutions:-
+🛠️ Step-by-Step Resolution to Make Apache Reachable on Port 5003
+1️⃣  From Jump Host: Identify the Problem Server
+telnet stapp01 5003
+If telnet fails, this means port 5003 is not reachable, so move to the next step.
+
+2️⃣ SSH Into the Problematic App Server
+ssh tony@stapp01
+
+3️⃣ Check Apache HTTPD Service Status
+systemctl status httpd
+
+Try starting it:
+systemctl start httpd
+
+⚠️ If it fails, there may be a port conflict.
+
+4️⃣ Diagnose Port Usage with netstat
+
+netstat -tulnp
+
+Look for any process using port 5003. If it’s a non-Apache service (e.g., 247/sendemail:ac), you’ll need to kill it:
+kill 247
+
+5️⃣ Re-Start Apache HTTPD
+Ensure it starts without error.
+
+6️⃣ Configure Apache to Dnsname on Desired IP and Port
+
+Edit Apache config:
+vim /etc/httpd/conf/httpd.conf
+
+add this entry server Dnsname 
+172.16.238.10:5003
+
+Then restart Apache:
+systemctl restart httpd
+
+7️⃣ Open Port 5003 via iptables (Since firewalld Is Unavailable)
+
+restart httpd service 
+sudo systemctl restart httpd
+
+🔥 Open Port 5003 via iptables (since firewalld isn’t available)
+iptables -I INPUT -p tcp --dport 5003 -j ACCEPT
+service iptables save
+
+Verify the rule was added:
+iptables -L -n | grep 5003
+
+8️⃣ Final Validation from Jump Host
+Now test from the jump host:
+curl http://stapp01:5003
