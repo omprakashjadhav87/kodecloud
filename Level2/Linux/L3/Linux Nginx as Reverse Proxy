@@ -1,0 +1,61 @@
+Nautilus system admin's team is planning to deploy a front end application for their backup utility on Nautilus Backup Server, so that they can manage the backups of different websites from a graphical user interface. They have shared requirements to set up the same; please accomplish the tasks as per detail given below:
+
+a. Install Apache Server on Nautilus Backup Server and configure it to use 5000 port (do not bind it to 127.0.0.1 only, keep it default i.e let Apache listen on server's IP, hostname, localhost, 127.0.0.1 etc).
+
+b. Install Nginx webserver on Nautilus Backup Server and configure it to use 8096.
+
+c. Configure Nginx as a reverse proxy server for Apache.
+
+d. There is a sample index file /home/thor/index.html on Jump Host, copy that file to Apache's document root.
+
+e. Make sure to start Apache and Nginx services.
+
+f. You can test final changes using curl command, e.g curl http://<backup server IP or Hostname>:8096.
+
+Solutions:- 
+🧰 Step-by-Step Setup
+a. Install Apache and configure it to use port 5000
+sudo yum install httpd -y
+Edit the Apache ports configuration:
+
+sudo vi /etc/httpd/conf/httpd.conf
+
+Add or modify:
+Listen 5000
+
+sudo systemctl restart httpd
+
+b. Install Nginx and configure it to use port 8096
+sudo yum install nginx -y   # or dnf
+
+Edit the default Nginx site:
+sudo vi /etc/nginx/nginx.conf
+
+Update the server block:
+nginx
+server {
+    listen 8096;
+
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+
+Restart Nginx:
+sudo systemctl restart nginx
+
+sudo systemctl enable httpd nginx
+
+From the Jump Host:
+scp /home/thor/index.html clint@172.16.238.16:/tmp/
+
+# Then SSH into the backup server
+ssh clint@172.16.238.16
+
+# On the backup server
+sudo mv /tmp/index.html /var/www/html/
+
+Verify it works
+curl http://<backup-server-ip>:8096
