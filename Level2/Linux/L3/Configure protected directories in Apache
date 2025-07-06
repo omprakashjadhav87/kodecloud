@@ -1,0 +1,60 @@
+xFusionCorp Industries has hosted several static websites on Nautilus Application Servers in Stratos DC. There are some confidential directories in the document root that need to be 
+password protected. Since they are using Apache for hosting the websites, the production support team has decided to use .htaccess with basic auth. There is a website that needs to 
+be uploaded to /var/www/html/devops on Nautilus App Server 3. However, we need to set up the authentication before that.
+1. Create /var/www/html/devops direcotry if doesn't exist.
+2. Add a user james in htpasswd and set its password to YchZHRcLkL.
+3. There is a file /tmp/index.html present on Jump Server. Copy the same to the directory you created, please make sure default document root should remain /var/www/html. 
+Also website should work on URL http://<app-server-hostname>:8080/devops/
+
+Soutions:- 
+
+🔧 Step-by-Step Setup
+
+1. ✅ Create the Directory
+sudo mkdir -p /var/www/html/devops
+
+2. 🔐 Create the .htpasswd File and Add User
+sudo htpasswd -c /etc/httpd/.htpasswd james
+
+sudo htpasswd -c /etc/httpd/.htpasswd james
+When prompted, enter the password: YchZHRcLkL
+
+3. 🛡️ Configure .htaccess for Authentication
+Create a .htaccess file inside /var/www/html/devops/:
+sudo nano /var/www/html/devops/.htaccess
+
+Add the following:
+
+AuthType Basic
+AuthName "Restricted Access"
+AuthUserFile /etc/httpd/.htpasswd
+Require valid-user
+
+4. 🔧 Allow .htaccess Overrides in Apache Config
+Edit Apache config (usually /etc/httpd/conf/httpd.conf or a virtual host file):
+<Directory "/var/www/html/devops">
+    AllowOverride All
+</Directory>
+
+
+Then restart Apache:
+sudo systemctl restart httpd
+
+5. 📁 Copy the Website File
+From the Jump Server:
+Copy the file to a temporary location:
+scp /tmp/index.html banner@172.16.238.12:/tmp/
+
+SSH into the server:
+ssh banner@172.16.238.12
+
+Move the file with elevated privileges:
+sudo mv /tmp/index.html /var/www/html/devops/
+
+Option 2: Temporarily Change Ownership or Permissions
+If you're managing the server and want to allow banner to write directly:
+sudo chown banner /var/www/html/devops
+
+Or, more cautiously:
+sudo chmod 775 /var/www/html/devops
+sudo usermod -aG apache banner  # or www-data, depending on distro
