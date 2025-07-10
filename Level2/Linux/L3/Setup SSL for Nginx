@@ -1,0 +1,54 @@
+The system admins team of xFusionCorp Industries needs to deploy a new application on App Server 1 in Stratos Datacenter. They have some pre-requites to get ready that server for application deployment. Prepare the server as per requirements shared below:
+
+1. Install and configure nginx on App Server 1.
+
+2. On App Server 1 there is a self signed SSL certificate and key present at location /tmp/nautilus.crt and /tmp/nautilus.key. Move them to some appropriate location and deploy the same in Nginx.
+3. Create an index.html file with content Welcome! under Nginx document root.
+4. For final testing try to access the App Server 1 link (either hostname or IP) from jump host using curl command. For example curl -Ik https://<app-server-ip>/.
+
+Solutions:-
+
+🔧 Nginx SSL Setup (Self-Signed Certificate) on CentOS
+1️⃣ Install Nginx
+
+sudo yum install -y nginx
+
+2️⃣ Move SSL Certificate & Key
+Let’s move them to a secure, conventional location:
+sudo mkdir -p /etc/nginx/ssl
+sudo mv /tmp/nautilus.crt /etc/nginx/ssl/
+sudo mv /tmp/nautilus.key /etc/nginx/ssl/
+
+Set appropriate permissions:
+sudo chmod 600 /etc/nginx/ssl/nautilus.*
+sudo chown root:root /etc/nginx/ssl/nautilus.*
+
+3️⃣ Create Document Root & Index Page
+
+echo "Welcome!" | sudo tee /usr/share/nginx/html/index.html
+
+4️⃣ Configure Nginx for SSL
+Creat the SSL server block in /etc/nginx/conf.d/ssl.conf:
+
+vi ssl.conf
+
+server {
+    listen 443 ssl;
+    server_name localhost;
+
+    ssl_certificate     /etc/nginx/ssl/nautilus.crt;
+    ssl_certificate_key /etc/nginx/ssl/nautilus.key;
+
+    location / {
+        root   /usr/share/nginx/html;
+        index  index.html;
+    }
+}
+
+5️⃣ Start & Enable Nginx
+sudo systemctl enable nginx
+sudo systemctl start nginx
+
+6️⃣ Test from Jump Host
+Use the following curl command to verify SSL setup:
+curl -Ik https://172.16.238.10/
