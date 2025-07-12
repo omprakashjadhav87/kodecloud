@@ -1,0 +1,30 @@
+To accommodate the backup agent tool's specifications, the system admin team at xFusionCorp Industries requires the creation of a user with a non-interactive shell. Here's your task:
+
+Create a user named rose with a non-interactive shell on App Server 3.
+
+Solutions:-
+
+🧩 Step-by-Step Command Instructions
+Log in to App Server 3 Make sure you’re on the correct host:
+ssh user@stapp03
+
+Check available non-interactive shells Confirm your system supports the intended shell:
+cat /etc/shells
+
+Look for options like:
+
+/sbin/nologin
+
+/usr/sbin/nologin
+
+/bin/false
+
+Create the user rose with non-interactive shell Assuming /sbin/nologin is valid:
+sudo useradd -s /sbin/nologin rose
+
+Verify the user is created Check basic info:
+id rose
+getent passwd rose
+
+You should see output like:
+rose:x:1002:1002::/home/rose:/sbin/nologin
