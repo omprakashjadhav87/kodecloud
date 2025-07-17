@@ -1,0 +1,33 @@
+The Nautilus DevOps team is testing applications containerization, which is supposed to be migrated on docker container-based environments soon. In today's stand-up meeting one of the 
+team members has been assigned a task to create and test a docker container with certain requirements. Below are more details:
+
+a. On App Server  1 in Stratos DC pull nginx image (preferably latest tag but others should work too).
+b. Create a new container with name apps from the image you just pulled.
+c. Map the host volume /opt/data with container volume /tmp. There is an sample.txt file present on same server under /tmp; copy that file to /opt/data. Also please keep the container
+in running state.
+
+Solutions:-
+Step A: Pull the Nginx Docker image
+docker pull nginx:latest
+
+Before creating the container, make sure the host directory exists:
+sudo mkdir -p /opt/data
+
+Now copy the file:
+sudo cp /tmp/sample.txt /opt/data/
+
+Verify file prest or not .
+cd /opt/data/
+ls
+sample.txt
+
+Then start the container with volume mapping:
+
+docker run -d \
+  --name apps \
+  -v /opt/data:/tmp/ \
+  nginx:latest
+  
+  You can verify everything is in place with:
+  docker ps
+  docker exec apps ls /tmp
