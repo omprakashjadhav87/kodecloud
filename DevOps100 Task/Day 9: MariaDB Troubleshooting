@@ -1,0 +1,21 @@
+There is a critical issue going on with the Nautilus application in Stratos DC. The production support team identified that the application is unable to connect to the database. After digging into the issue, the team found that mariadb service is down on the database server.
+Look into the issue and fix the same.
+
+Solutions:-
+🛠️ Step-by-Step Fix for MariaDB Service Downtime
+
+MariaDB is trying to write a test file to /var/lib/mysql during startup to verify it has proper access—but it’s failing, which usually means permission or ownership issues on the data directory.
+
+Check Ownership
+ls -ld /var/lib/mysql
+
+If it’s not owned by mysql:mysql, fix it:
+
+chown -R mysql:mysql /var/lib/mysql
+
+Check Permissions
+chmod 755 /var/lib/mysql
+
+verify SELinux Isn’t Blocking Access Since you’ve worked with SELinux before, you can test quickly:
+setenforce 0
+systemctl restart mariadb
