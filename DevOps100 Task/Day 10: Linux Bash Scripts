@@ -1,0 +1,50 @@
+The production support team of xFusionCorp Industries is working on developing some bash scripts to automate different day to day tasks. One is to create a bash script for taking websites
+backup. They have a static website running on App Server 3 in Stratos Datacenter, and they need to create a bash script named news_backup.sh which should accomplish the following tasks.
+(Also remember to place the script under /scripts directory on App Server 3).
+
+a. Create a zip archive named xfusioncorp_news.zip of /var/www/html/news directory.
+b. Save the archive in /backup/ on App Server 3. This is a temporary storage, as backups from this location will be clean on weekly basis. Therefore, we also need to save this backup 
+archive on Nautilus Backup Server.
+c. Copy the created archive to Nautilus Backup Server server in /backup/ location.
+d. Please make sure script won't ask for password while copying the archive file. Additionally, the respective server user (for example, tony in case of App Server 1) must be able to run
+it.
+
+Solutions:-
+
+Compress the Website Directory
+I archived /var/www/html/news into a zip file using:
+zip -r /backup/xfusioncorp_news.zip /var/www/html/news
+
+Save Backup Locally (Temporarily)
+The zip file is saved to /backup/ on App Server 3.
+
+Copy Backup to Nautilus Backup Server (stbkp01) remotely
+I used scp to send the zip file to the backup server(stbkp01) using:
+scp /backup/xfusioncorp_news.zip clint@stbkp01:/backup/
+
+Ensure Passwordless Transfer
+To avoid manual password prompts during automation, I set up SSH key-based authentication using:
+
+ssh-keygen -t rsa
+ssh-copy-id clint@stbkp01
+
+Final Script: /scripts/news_backup.sh
+I created this script using:
+
+vi /scripts/news_backup.sh
+
+#!/bin/bash
+# Step 1: Create zip archive
+zip -r /backup/xfusioncorp_news.zip /var/www/html/blog
+# Step 2: Transfer backup to remote backup server(stbkp01)
+scp /backup/xfusioncorp_news.zip clint@stbkp01:/backup/
+
+I Set the script as executable:
+chmod +x /scripts/news_backup.sh
+
+Verification Steps:
+To ensure I carried out the task successfully, I carried out the following;
+
+✅ ls /backup/xfusioncorp_news.zip which confirmed local backup
+✅ ssh clint@stbkp01 then ls /backup/xfusioncorp_news.zip to confirm the remote copy on the backup server.
+
