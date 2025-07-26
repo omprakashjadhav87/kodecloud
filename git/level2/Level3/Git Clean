@@ -1,0 +1,24 @@
+The Nautilus application development team was working on a git repository /usr/src/kodekloudrepos/news present on Storage server in Stratos DC. One of the developers mistakenly
+created a couple of files under this repository, but now they want to clean this repository without adding/pushing any new files. Find below more details:
+
+Clean the /usr/src/kodekloudrepos/news git repository without adding/pushing any new files, make sure git status is clean.
+
+Solutioins:-
+
+🧹 Steps to Clean the Repository
+Navigate to the repository
+cd /usr/src/kodekloudrepos/news
+
+Check the current git status
+git status
+This will show you the untracked files that need to be cleaned.
+
+Clean untracked files and directories To remove them without touching anything staged or committed:
+git clean -fd
+
+Verify cleanup Run:
+git status
+
+You should see:
+On branch <your-branch-name>
+nothing to commit, working tree clean
