@@ -1,0 +1,67 @@
+The system admins team of xFusionCorp Industries needs to deploy a new application on App Server 3 in Stratos Datacenter. They have some pre-requites to get ready that server for 
+application deployment. Prepare the server as per requirements shared below:
+
+1. Install and configure nginx on App Server 3.
+2. On App Server 3 there is a self signed SSL certificate and key present at location /tmp/nautilus.crt and /tmp/nautilus.key. Move them to some appropriate location and deploy the 
+same in Nginx.
+3. Create an index.html file with content Welcome! under Nginx document root.
+4. For final testing try to access the App Server 3 link (either hostname or IP) from jump host using curl command. For example curl -Ik https://<app-server-ip>/.
+
+Solutions:- 
+
+Install and Start Nginx
+yum install nginx -y
+
+sudo systemctl start nginx
+sudo systemctl enable nginx
+
+2. Move SSL Certificate and Key
+
+sudo mkdir -p /etc/ssl/private
+
+sudo mv /tmp/nautilus.crt /etc/ssl/certs/
+sudo mv /tmp/nautilus.key /etc/ssl/private/
+
+Update permissions (optional but good practice):
+sudo chmod 644 /etc/ssl/certs/nautilus.crt
+sudo chmod 600 /etc/ssl/private/nautilus.key
+
+⚙️ 3. Configure Nginx with SSL
+
+sudo vi /etc/nginx/conf.d/ssl_site.conf
+
+server {
+    listen 443 ssl;
+    server_name localhost;
+
+    ssl_certificate /etc/ssl/certs/nautilus.crt;
+    ssl_certificate_key /etc/ssl/private/nautilus.key;
+
+    root /var/www/html;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+
+Create Document Root
+sudo mkdir -p /var/www/html
+
+echo "Welcome!" | sudo tee /var/www/html/index.html
+
+Firewall Installed
+installing iptables
+
+yum install iptables-persistent
+
+sudo iptables -I INPUT -p tcp --dport 443 -j ACCEPT
+sudo service iptables save
+
+Reload Nginx:
+sudo systemctl reload nginx
+
+Try
+curl -Ik https://172.16.238.12/
+
+Nginx binds correctly and listens on port 443, curl will give you that sweet HTTP/1.1 200 OK.
