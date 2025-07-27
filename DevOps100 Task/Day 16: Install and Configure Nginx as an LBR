@@ -1,0 +1,88 @@
+Day by day traffic is increasing on one of the websites managed by the Nautilus production support team. Therefore, the team has observed a degradation in website performance. Following discussions about this issue, the team has decided to deploy this application on a high availability stack i.e on Nautilus infra in Stratos DC. They started the migration last month and it is almost done, as only the LBR server configuration is pending. Configure LBR server as per the information given below:
+a. Install nginx on LBR (load balancer) server.
+b. Configure load-balancing with the an http context making use of all App Servers.
+c. Make sure you do not update the apache port that is already defined in the apache configuration on all app servers, also make sure apache service is up and running on all app servers.
+d. Once done, you can access the website using StaticApp button on the top bar.
+
+Solutions:- 
+Check the port on all app server . on below location  
+vi /etc/httpd/conf/httpd.conf
+Check the port: Listen 6300
+Connect to LBR:
+ssh loki@stlb01
+
+sudo su -
+
+yum update
+
+yum install nginx
+
+paste the same conntet exting file content should be deleted .
+
+you need to change just listen port no as per apps server .
+Below changes only perform on LBR ser dont touch on apps servers.
+
+/etc/nginx/nginx.conf
+
+
+
+========================================================================
+#paste the same conntet exting file content should be deleted 
+user nginx;
+worker_processes auto;
+error_log /var/log/nginx/error.log;
+pid /run/nginx.pid;
+
+include /usr/share/nginx/modules/*.conf;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                    '$status $body_bytes_sent "$http_referer" '
+                    '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log /var/log/nginx/access.log main;
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 4096;
+
+    include /etc/nginx/conf.d/*.conf;
+
+    upstream app_servers {
+        server stapp01.stratos.xfusioncorp.com:6300;
+        server stapp02.stratos.xfusioncorp.com:6300;
+        server stapp03.stratos.xfusioncorp.com:6300;
+    }
+
+    server {
+        listen 80;
+        server_name _;
+
+        location / {
+            proxy_pass http://app_servers;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+
+        error_page 404 /404.html;
+        location = /404.html { }
+
+        error_page 500 502 503 504 /50x.html;
+        location = /50x.html { }
+    }
+}
+========================================================================
+
+Validate config again:
+
+sudo nginx -t
+sudo systemctl restart nginx
