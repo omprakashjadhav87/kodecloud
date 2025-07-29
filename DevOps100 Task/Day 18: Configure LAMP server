@@ -1,0 +1,52 @@
+xFusionCorp Industries is planning to host a WordPress website on their infra in Stratos Datacenter. They have already done infrastructure configuration—for example, on the storage server they
+already have a shared directory /vaw/www/html that is mounted on each app host under /var/www/html directory. Please perform the following steps to accomplish the task:
+a. Install httpd, php and its dependencies on all app hosts.
+b. Apache should serve on port 3000 within the apps.
+c. Install/Configure MariaDB server on DB Server.
+d. Create a database named kodekloud_db2 and create a database user named kodekloud_pop identified as password B4zNgHA7Ya. Further make sure this newly created user is able to perform all 
+operation on the database you created.
+e. Finally you should be able to access the website on LBR link, by clicking on the App button on the top bar. You should see a message like App is able to connect to the database using user 
+kodekloud_pop.
+
+Solutions:-
+🔧 Step-by-Step LAMP Setup for WordPress
+a. Install Apache, PHP & Dependencies (All App Hosts server)
+sudo yum install httpd php php-mysqlnd php-fpm -y
+
+Start and enable Apache:
+sudo systemctl start httpd
+sudo systemctl enable httpd
+
+Configure Apache to Serve on Port 3000
+Edit the Apache configuration:
+sudo vi /etc/httpd/conf/httpd.conf
+
+Change the Listen directive:
+Listen 3000
+
+Restart Apache:
+sudo systemctl restart httpd
+    
+
+Install & Configure MariaDB Server (DB Server)
+sudo yum install mariadb-server -y
+sudo systemctl start mariadb
+sudo systemctl enable mariadb
+
+Create Database & User
+Login to MariaDB:
+sudo mysql
+
+Execute the following SQL:
+CREATE DATABASE kodekloud_db2;
+
+CREATE USER 'kodekloud_pop'@'%' IDENTIFIED BY 'B4zNgHA7Ya';
+
+GRANT ALL PRIVILEGES ON kodekloud_db2.* TO 'kodekloud_pop'@'%';
+
+FLUSH PRIVILEGES;
+
+Exit
+EXIT;
+
+Validate Website Access from Link
