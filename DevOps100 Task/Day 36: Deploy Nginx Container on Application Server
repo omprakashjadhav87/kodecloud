@@ -1,0 +1,32 @@
+The Nautilus DevOps team is conducting application deployment tests on selected application servers. They require a nginx container deployment on Application Server 1. 
+Complete the task with the following instructions:
+On Application Server 1 create a container named nginx_1 using the nginx image with the alpine tag. Ensure container is in a running state.
+
+solutions:-
+Step-by-Step Instructions
+SSH into Application Server 1 If you're not already on the server:
+
+ssh user@application-server-1
+Pull the Nginx Alpine Image This ensures the latest lightweight version is available:
+
+docker pull nginx:alpine
+Run the Container Create and start the container named nginx_1:
+
+docker run -d --name nginx_1 nginx:alpine
+-d runs the container in detached mode.
+
+--name nginx_1 assigns the container name.
+
+nginx:alpine specifies the image and tag.
+
+Verify the Container is Running Check its status:
+
+
+docker ps -f name=nginx_1
+You should see output showing the container is Up.
+
+✅ Quick Validation
+If you want to test Nginx is serving content:
+
+
+docker exec nginx_1 wget -qO- localh
