@@ -1,0 +1,58 @@
+Sarah and Max were working on writting some stories which they have pushed to the repository. Max has recently added some new changes and is trying to push them to the repository 
+but he is facing some issues. Below you can find more details:
+
+SSH into storage server using user max and password Max_pass123. Under /home/max you will find the story-blog repository. Try to push the changes to the origin repo and fix the issues. 
+The story-index.txt must have titles for all 4 stories. Additionally, there is a typo in The Lion and the Mooose line where Mooose should be Mouse.
+
+Click on the Gitea UI button on the top bar. You should be able to access the Gitea page. You can login to Gitea server from UI using username sarah and password Sarah_pass123 or username max and password Max_pass123.
+
+Note: For these kind of scenarios requiring changes to be done in a web UI, please take screenshots so that you can share it with us for review in case your task is marked incomplete. 
+You may also consider using a screen recording software such as loom.com to record and share your work.
+
+Solutions:- 
+
+Step 1: SSH into the storage server
+
+ssh max@<storage-server-ip>
+# Password: Max_pass123
+
+📁 Step 2: Navigate to the repository
+cd /home/max/story-blog
+
+🛠️ Step 3: Resolve the merge conflict
+Open the conflicted file:
+
+vi story-index.txt
+
+Manually edit the file to:
+
+Include all 4 story titles
+
+Fix the typo: change Mooose to Mouse
+
+✅ Final version should look like:
+
+1. The Lion and the Mouse
+2. The Frogs and the Ox
+3. The Fox and the Grapes
+
+✅ Step 5: Finalize the merge
+
+git add story-index.txt
+git commit -m "Resolved merge conflict and fixed typo"
+git push origin master
+
+🌐 Step 6: Verify on Gitea UI
+
+🌐 Step 6: Verify on Gitea UI
+Click the Gitea UI button.
+
+Login using:
+
+Username: max
+
+Password: Max_pass123
+
+Navigate to the story-blog repo.
+
+Confirm that story-index.txt has all 4 titles and the typo is corrected.
