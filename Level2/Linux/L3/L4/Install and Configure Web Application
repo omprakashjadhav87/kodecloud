@@ -1,0 +1,40 @@
+xFusionCorp Industries is planning to host two static websites on their infra in Stratos Datacenter. The development of these websites is still in-progress, 
+but we want to get the servers ready. Please perform the following steps to accomplish the task:
+a. Install httpd package and dependencies on app server 2.
+b. Apache should serve on port 5002.
+c. There are two website's backups /home/thor/beta and /home/thor/games on jump_host. Set them up on Apache in a way that beta should work on the link http://localhost:5002/beta/ and games 
+should work on link http://localhost:5002/games/ on the mentioned app server.
+d. Once configured you should be able to access the website using curl command on the respective app server, i.e curl http://localhost:5002/beta/ and curl http://localhost:5002/games/
+
+Solutions:- 
+
+ssh tony@stapp02
+
+sudo su -
+
+yum install openssh-clients -y
+
+yum install -y httpd
+
+cd /etc/httpd/conf
+
+sed -i 47s/80/5002/ httpd.conf
+
+systemctl enable httpd
+systemctl start httpd
+systemctl status httpd
+
+Go back to thor
+
+sudo scp -r /home/thor/beta steve@172.16.238.11:/tmp
+sudo scp -r /home/thor/games steve@172.16.238.11:/tmp
+
+Go back to steve, if you are still inside /tmp, run: mv beta gmaes /var/www/html
+mv beta games /var/www/html 
+
+cd /var/www/html
+
+ls
+
+curl -4 http://stapp02:5002/beta/
+curl -4 http://stapp02:5002/gmaes/
