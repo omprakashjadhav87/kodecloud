@@ -1,0 +1,21 @@
+One of the Nautilus developer was working to test new changes on a container. He wants to keep a backup of his changes to the container. A new request has been raised for the DevOps team 
+to create a new image from this container. Below are more details about it:
+a. Create an image demo:devops on Application Server 3 from a container ubuntu_latest that is running on same server.
+
+Solutions:- 
+🛠️ Step-by-Step Instructions
+
+Access Application Server 3 SSH into the server where the container is running:
+ssh user@application-server-3
+
+Verify the Running Container Confirm the container ubuntu_latest is active:
+docker ps | grep ubuntu_latest
+
+Commit the Container to an Image Use the docker commit command to create a new image from the container:
+docker commit ubuntu_latest demo:devops
+
+ubuntu_latest: Name or ID of the running container
+demo:devops: Name and tag of the new image
+
+Verify the New Image Check that the image was created successfully:
+docker images | grep demo
