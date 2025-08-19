@@ -1,0 +1,54 @@
+The Nautilus application development team is planning to launch a new PHP-based application, which they want to deploy on Nautilus infra in Stratos DC. 
+The development team had a meeting with the production support team and they have shared some requirements regarding the infrastructure. Below are the requirements they shared:
+
+a. Install nginx on app server 2 , configure it to use port 8096 and its document root should be /var/www/html.
+b. Install php-fpm version 8.2 on app server 2, it should listen on port 9000.
+c. Configure php-fpm and nginx to work together.
+d. Once configured correctly, you can test the website using curl http://stapp02:8096/index.php command from jump host. Please note that if the URL is displaying index.php in plain text,
+meaning you see <?php etc in the output, it indicates that either PHP-FPM is not installed or Nginx is not properly configured to work with PHP-FPM.
+
+Solutions:- 
+
+ssh tony@stapp02
+
+sudo su -
+
+yum install epel-release
+
+yum install nginx
+
+dnf install -y https://rpms.remirepo.net/enterprise/remi-release-9.rpm
+
+dnf module enable php:remi-8.1
+
+yum install php-fpm
+
+vi /etc/nginx/nginx.conf
+
+File should look like this:
+
+    server {
+        listen       8097;
+        listen       [::]:8097;
+        server_name  _;
+        root         /var/www/html;
+
+        # Load configuration files for the default server block.
+        include /etc/nginx/default.d/*.conf; -- #Hit enter and paste below block 
+		
+        location ~ \.php$ {
+
+          try_files $uri = 404;
+          include fastcgi_params;
+          fastcgi_pass  127.0.0.1:9000;
+          fastcgi_index index.php;     
+          fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+         }
+        location /
+        {
+        index  index.php index.html index.htm;
+        }
+systemctl restart nginx
+
+[root@stapp02 ~]# curl http://stapp02:8097/index.php
+Welcome to xFusionCorp Industries!
