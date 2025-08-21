@@ -1,0 +1,32 @@
+As per recent requirements shared by the Nautilus application development team, they need custom images created for one of their projects. Several of the initial testing requirements
+are already been shared with DevOps team. Therefore, create a docker file /opt/docker/Dockerfile (please keep D capital of Dockerfile) on App server 3 in Stratos DC and configure
+to build an image with the following requirements:
+a. Use ubuntu:24.04 as the base image.
+b. Install apache2 and configure it to work on 8089 port. (do not update any other Apache configuration settings like document root etc).
+
+Solutions:- 
+
+📄 File: /opt/docker/Dockerfile
+=====================================
+FROM ubuntu:24.04
+
+# Set non-interactive mode for apt
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Update and install apache2
+RUN apt-get update && \
+    apt-get install -y apache2 && \
+    apt-get clean
+
+# Change Apache to listen on port 8089
+RUN sed -i 's/Listen 80/Listen 8089/' /etc/apache2/ports.conf && \
+    sed -i 's/<VirtualHost \*:80>/<VirtualHost *:8089>/' /etc/apache2/sites-available/000-default.conf
+
+# Expose port 8089
+EXPOSE 8089
+
+# Start Apache in the foreground
+CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
+
+Once this file is in place, you can build the image with:
+docker build -t nautilus-apache:latest /opt/docker
