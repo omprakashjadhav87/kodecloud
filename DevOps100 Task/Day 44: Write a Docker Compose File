@@ -1,0 +1,55 @@
+The Nautilus application development team shared static website content that needs to be hosted on the httpd web server using a containerised platform. The team has shared
+details with the DevOps team, and we need to set up an environment according to those guidelines. Below are the details:
+a. On App Server 3 in Stratos DC create a container named httpd using a docker compose file /opt/docker/docker-compose.yml (please use the exact name for file).
+b. Use httpd (preferably latest tag) image for container and make sure container is named as httpd; you can use any name for service.
+c. Map 80 number port of container with port 3003 of docker host.
+d. Map container's /usr/local/apache2/htdocs volume with /opt/devops volume of docker host which is already there. (please do not modify any data within these locations).
+
+Solutions:- 
+
+🛠️ Step-by-Step Instructions
+Log into App Server 3 If you're not already on it, SSH into the server:
+
+
+ssh user@appserver3
+Navigate to the Docker Compose directory
+
+cd /opt/docker
+
+create docker-compose.yml file
+
+version: '3.8'
+
+services:
+  webserver:
+    image: httpd:latest
+    container_name: httpd
+    ports:
+      - "3003:80"
+    volumes:
+      - /opt/devops:/usr/local/apache2/htdocs:ro
+
+Install docker compose .
+curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+
+running it directly like this:
+/usr/local/bin/docker-compose up -d
+
+🌐 Test the app.
+curl http://localhost:3003
+You should see the static website content served from /opt/devops.
+
+Run the Docker Compose file
+
+
+docker-compose up -d
+
+
+Verify the container is running
+
+
+docker ps
+You should see a container named httpd with the correct port mapping.
+
+Test the setup From the host machine, run:
