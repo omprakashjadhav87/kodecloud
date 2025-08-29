@@ -1,0 +1,18 @@
+The Nautilus DevOps team is delving into Kubernetes for app management. One team member needs to create a deployment following these details:
+
+Create a deployment named nginx to deploy the application nginx using the image nginx:latest (ensure to specify the tag)
+
+Note: The kubectl utility on jump_host is set up to interact with the Kubernetes cluster.
+
+Solutions:-
+
+Perform on jump host only.
+
+⚙️ Step-by-Step Command
+
+Run the following command directly on the jump_host terminal:
+kubectl create deployment nginx --image=nginx:latest
+
+🔍 Verify the Deployment
+kubectl get deployments
+kubectl get pods
