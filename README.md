@@ -2,7 +2,6 @@
 
 
 Solutions for the KodeKloud Engineer 2.0 tasks.
-![image](https://github.com/user-attachments/assets/70beaf7b-3afb-4755-9a18-0fdaf9f9b00c)
 
 Info about the course:
 https://engineer.kodekloud.com/signup?referral=66a70db7335708d9cf09f7c2
