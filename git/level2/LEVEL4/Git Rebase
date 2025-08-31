@@ -1,1 +1,29 @@
+The Nautilus application development team has been working on a project repository /opt/beta.git. This repo is cloned at /usr/src/kodekloudrepos on storage server in Stratos DC. They recently shared the following requirements with DevOps team:
+One of the developers is working on feature branch and their work is still in progress, however there are some changes which have been pushed into the master branch, the developer now wants to rebase the feature branch with the master branch without loosing any data from the feature branch, also they don't want to add any merge commit by simply merging the master branch into the feature branch. Accomplish this task as per requirements mentioned.
+Also remember to push your changes once done.
 
+Solutions:- 
+
+✅ Step-by-Step Fix
+1. Navigate into the Git Repo
+
+cd /usr/src/kodekloudrepos/beta
+2. Verify It’s a Git Repo
+
+ls -a
+You should see a .git directory here.
+
+3. Check Available Branches
+
+git branch
+4. Switch to the Feature Branch
+
+git checkout feature
+
+5. Rebase Feature onto Master
+
+git fetch origin
+git rebase origin/master
+6. Push the Rebased Branch
+
+git push origin feature --force 
