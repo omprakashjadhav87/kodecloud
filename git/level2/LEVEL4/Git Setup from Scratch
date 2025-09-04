@@ -1,0 +1,44 @@
+Some new developers have joined xFusionCorp Industries and have been assigned Nautilus project. They are going to start development on a new application, and some pre-requisites
+have been shared with the DevOps team to proceed with. Please note that all tasks need to be performed on storage server in Stratos DC.
+a. Install git, set up any values for user.email and user.name globally and create a bare repository /opt/games.git.
+b. There is an update hook (to block direct pushes to the master branch) under /tmp on storage server itself; use the same to block direct pushes to the master branch in /opt/games.git repo.
+c. Clone /opt/games.git repo in /usr/src/kodekloudrepos/games directory.
+d. Create a new branch named xfusioncorp_games in repo that you cloned under /usr/src/kodekloudrepos directory.
+e. There is a readme.md file in /tmp directory on storage server itself; copy that to the repo, add/commit in the new branch you just created, and finally push your branch to the origin.
+f. Also create master branch from your branch and remember you should not be able to push to the master directly as per the hook you have set up.
+
+Solutions:- 
+
+a. Install Git and Configure Global Settings
+sudo yum install git -y  # or use apt if it's a Debian-based system
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+
+Create a bare repository:
+cd /opt
+git init --bare games.git
+
+🛡️ b. Set Up Update Hook to Block Direct Pushes to master
+Assuming the hook script is at /tmp/update:
+scp /tmp/update /opt/games.git/hooks/update
+chmod +x /opt/games.git/hooks/update
+
+✅ This hook will now reject direct pushes to the master branch.
+📦 c. Clone the Bare Repository
+mkdir -p /usr/src/kodekloudrepos
+cd /usr/src/kodekloudrepos
+git clone /opt/games.git games
+
+🌿 d. Create a New Branch xfusioncorp_games
+cd /usr/src/kodekloudrepos/games
+git checkout -b xfusioncorp_games
+
+📄 e. Add readme.md, Commit, and Push the Branch
+cp /tmp/readme.md .
+git add readme.md
+git commit -m "Add readme.md to xfusioncorp_games branch"
+git push origin xfusioncorp_games
+
+🚫 f. Create master Branch and Test Hook
+git checkout -b master
+git push origin xfusioncorp_games
