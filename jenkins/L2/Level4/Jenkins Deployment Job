@@ -1,1 +1,113 @@
+The Nautilus development team had a meeting with the DevOps team where they discussed automating the deployment of one of their apps using Jenkins (the one in Stratos Datacenter).
+They want to auto deploy the new changes in case any developer pushes to the repository. As per the requirements mentioned below configure the required Jenkins job.
+Click on the Jenkins button on the top bar to access the Jenkins UI. Login using username admin and Adm!n321 password.
+Similarly, you can access the Gitea UI using Gitea button, username and password for Git is sarah and Sarah_pass123 respectively. Under user sarah you will find a repository named web
+that is already cloned on the Storage server under sarah's home. sarah is a developer who is working on this repository.
 
+1. Install httpd (whatever version is available in the yum repo by default) and configure it to serve on port 8080 on All app servers. You can make it part of your Jenkins job or you can
+do this step manually on all app servers.
+2. Create a Jenkins job named nautilus-app-deployment and configure it in a way so that if anyone pushes any new change to the origin repository in master branch, the job should auto build
+and deploy the latest code on the Storage server under /var/www/html directory. Since /var/www/html on Storage server is shared among all apps.
+Before deployment, ensure that the ownership of the /var/www/html directory is set to user sarah, so that Jenkins can successfully deploy files to that directory.
+3. SSH into Storage Server using sarah user credentials mentioned above. Under sarah user's home you will find a cloned Git repository named web. Under this repository there is an 
+index.html file, update its content to Welcome to the xFusionCorp Industries, then push the changes to the origin into master branch. This push must trigger your Jenkins job and the latest changes
+must be deployed on the servers, also make sure it deploys the entire repository content not only index.html file.
+
+Click on the App button on the top bar to access the app, you should be able to see the latest changes you deployed. Please make sure the required content is loading on the main
+URL https://<LBR-URL> i.e there should not be any sub-directory like https://<LBR-URL>/web etc.
+
+Note:
+1. You might need to install some plugins and restart Jenkins service. So, we recommend clicking on Restart Jenkins when installation is complete and no jobs are running on plugin 
+installation/update page i.e update centre. Also some times Jenkins UI gets stuck when Jenkins service restarts in the back end so in such case please make sure to refresh the UI page.
+2. Make sure Jenkins job passes even on repetitive runs as validation may try to build the job multiple times.
+3. Deployment related tasks should be done by sudo user on the destination server to avoid any permission issues so make sure to configure your Jenkins job accordingly.
+4. For these kind of scenarios requiring changes to be done in a web UI, please take screenshots so that you can share it with us for review in case your task is marked incomplete. 
+You may also consider using a screen recording software such as loom.com to record and share your work.
+Solutions:- 
+
+End-to-End Deployment Pipeline with Jenkins, Git, and Apache
+
+Step 1: Configure Apache on All App Servers
+Connect to each app server:
+
+ssh tony@stapp01
+ssh steve@stapp02
+ssh banner@stapp03
+
+Switch to root and run:all server one by one .
+
+sudo su -
+sudo yum install httpd -y
+sudo sed -i 's/Listen 80/Listen 8080/g' /etc/httpd/conf/httpd.conf
+sudo systemctl restart httpd
+
+🧩 Step 2: Prepare Jenkins Server
+
+Connect to Jenkins:
+
+ssh jenkins@jenkins
+
+Generate SSH key pair:
+
+ssh-keygen -t rsa
+
+
+ssh-copy-id natasha@172.16.238.15( copy this key to storage server.) 
+
+Step 3:  login Storage server .
+
+Ensure natasha has ownership of /var/www/html:
+
+cd /var/www
+chown -R natasha html/
+
+🧱 Step 4: Configure Jenkins Plugins
+
+Step 4: Configure Jenkins Plugins
+In Jenkins UI:
+
+Go to Manage Jenkins → Plugins
+
+Install:
+
+Git
+
+SSH
+
+SSH Credentials
+
+SSH Build Agents
+
+🛠️ Step 5: Create Jenkins Job
+
+Create a Freestyle Project
+
+Configure Source Code Management with Git repo:
+
+http://git.stratos.xfusioncorp.com/sarah/web.git
+
+Add Build Step:
+
+scp index.html natasha@ststor01:/var/www/html
+
+Set Build Trigger:
+
+Enable Poll SCM
+
+Schedule: * * * * * (every minute)
+
+🧪 Step 6: Validate Git Workflow
+On ststor01, storage server as sarah:
+
+git clone http://git.stratos.xfusioncorp.com/sarah/web.git
+cd web
+echo "Welcome to the xFusionCorp Industries" > index.html
+git commit -am "Updated index.html"
+git push origin master
+
+✅ Step 7: Confirm Jenkins Deployment
+After Jenkins polls and runs the job: 
+
+index.html will be copied to /var/www/html on ststor01
+
+Apache will serve the updated content on port 8080
