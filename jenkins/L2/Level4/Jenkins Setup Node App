@@ -1,0 +1,116 @@
+The Nautilus application development team is working on to develop a Node app. They are still in the development phase however they want to deploy and test their app on a
+containerized environment and using a Jenkins pipeline. Please find below more details to complete this task.
+
+Click on the Jenkins button on the top bar to access the Jenkins UI. Login using username admin and password Adm!n321.
+Similarly, click on the Gitea button on the top bar to access the Gitea UI. Login using username sarah and password Sarah_pass123.
+There is a repository named sarah/web in Gitea, which is cloned on the Storage server under /home/sarah/web directory.
+A Dockerfile is already present under the git repository, please push the same to the origin repo if not pushed already.
+Create a jenkins pipeline job named node-app and configure it as below:
+Configure it to deploy the app on App Server 1
+The pipeline must have two stages Build and Deploy (names are case sensitive)
+
+In the Build stage, build an image named stregi01.stratos.xfusioncorp.com:5000/node-app:latest using the Dockerfile present under the Git repository. stregi01.stratos.xfusioncorp.com:5000 is the image registry server. After building the image push the same to the image registry server.
+
+In the Deploy stage, create a container named node-app using the image you build it the Build stage. Make sure to map the container port with host port 8080.
+
+
+Note:
+
+You might need to install some plugins and restart Jenkins service. So, we recommend clicking on Restart Jenkins when installation is complete and no jobs are running on plugin installation/update page i.e update centre. Also, Jenkins UI sometimes gets stuck when Jenkins service restarts in the back end. In this case, please make sure to refresh the UI page.
+
+For these kind of scenarios requiring changes to be done in a web UI, please take screenshots so that you can share it with us for review in case your task is marked incomplete. You may also consider using a screen recording software such as loom.com to record and share your work.
+
+Solutions:-
+
+Install these Plugins SSH, SSH Credentials, SSH Build Agents, Git, Credentials, Pipeline.
+
+ssh steve@stapp01
+
+ssh natasha@ststor01
+
+sudo su -
+
+yum install java-17-openjdk -y
+
+Create Credentials
+stapp01
+sarah
+ststor01
+
+
+Create a new Node
+stapp01
+launching via ssh
+/home/tony/jenkins
+
+Relaunch your Node
+
+Create a new job
+
+Build the job
+
+
+pipeline {
+    agent {
+        label 'stapp01' // Ensures the pipeline runs on the correct agent
+    }
+
+    environment {
+        IMAGE_NAME = "stregi01.stratos.xfusioncorp.com:5000/node-app:latest"
+        GIT_REPO = "http://git.stratos.xfusioncorp.com/sarah/web.git"
+        CONTAINER_NAME = "node-app"
+        HOST_PORT = "8080"
+        CONTAINER_PORT = "8080"
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                echo "Cloning repository from ${GIT_REPO}"
+                git url: "${GIT_REPO}", branch: 'master'
+
+                echo "Building Docker image: ${IMAGE_NAME}"
+                sh """
+                    docker build -t ${IMAGE_NAME} .
+                    docker push ${IMAGE_NAME}
+                """
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo "Deploying container ${CONTAINER_NAME} using image ${IMAGE_NAME}"
+                sh """
+                    docker rm -f ${CONTAINER_NAME} || true
+                    docker run -d --name ${CONTAINER_NAME} -p ${HOST_PORT}:${CONTAINER_PORT} ${IMAGE_NAME}
+                """
+            }
+        }
+    }
+}
+
+ ✅ Final Checks
+ 
+ [root@stapp01 ~]# docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+[root@stapp01 ~]# docker images
+REPOSITORY                                       TAG       IMAGE ID       CREATED         SIZE
+stregi01.stratos.xfusioncorp.com:5000/node-app   latest    f949ac78061d   2 minutes ago   87.4MB
+
+
+[root@stapp01 ~]# docker ps
+CONTAINER ID   IMAGE                                                   COMMAND                  CREATED         STATUS         PORTS                    NAMES
+93b8f29172eb   stregi01.stratos.xfusioncorp.com:5000/node-app:latest   "docker-entrypoint.s…"   2 minutes ago   Up 2 minutes   0.0.0.0:8080->8080/tcp   node-app
+[root@stapp01 ~]# 
+
+
+thor@jumphost ~$ curl stapp02:8080
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>About Sharks</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<...>
