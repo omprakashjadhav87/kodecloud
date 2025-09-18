@@ -1,1 +1,132 @@
+The Nautilus DevOps team is expanding their AWS infrastructure and requires the setup of a private Virtual Private Cloud (VPC) along with a subnet. This VPC and subnet configuration will ensure 
+that resources deployed within them remain isolated from external networks and can only communicate within the VPC. Additionally, the team needs to provision an EC2 instance under the newly 
+created private VPC. This instance should be accessible only from within the VPC, allowing for secure communication and resource management within the AWS environment. Create a VPC named 
+datacenter-priv-vpc with the CIDR block 10.0.0.0/16. Create a subnet named datacenter-priv-subnet inside the VPC with the CIDR block 10.0.1.0/24 and auto-assign IP option must not be enabled.
+Create an EC2 instance named datacenter-priv-ec2 inside the subnet and instance type must be t2.micro. Ensure the security group of the EC2 instance allows access only from within the VPC's CIDR block.
+Create the main.tf file (do not create a separate .tf file) to provision the VPC, subnet and EC2 instance. Use variables.tf file with the following variable names: KKE_VPC_CIDR for the VPC CIDR block. 
+KKE_SUBNET_CIDR for the subnet CIDR block. Use the outputs.tf file with the following variable names: KKE_vpc_name for the name of the VPC. KKE_subnet_name for the name of the subnet. KKE_ec2_private 
+for the name of the EC2 instance. Notes: The Terraform working directory is /home/bob/terraform. Right-click under the EXPLORER section in VS Code and select Open in Integrated Terminal to launch the 
+terminal. Before submitting the task, ensure that terraform plan returns No changes. Your infrastructure matches the configuration.
 
+Solutions:-
+
+variables.tf
+
+This file defines the input variables required by your configuration. 
+
+variable "KKE_VPC_CIDR" {
+  description = "The CIDR block for the VPC."
+  type        = string
+  default     = "10.0.0.0/16"
+}
+
+variable "KKE_SUBNET_CIDR" {
+  description = "The CIDR block for the private subnet."
+  type        = string
+  default     = "10.0.1.0/24"
+}
+
+main.tf
+
+This file contains the core logic for provisioning the AWS resources. It will create a VPC, a subnet, a security group, and an EC2 instance. 
+
+# Configure the AWS Provider
+provider "aws" {
+  region = "us-east-1"
+}
+
+# Create the VPC
+resource "aws_vpc" "datacenter_priv_vpc" {
+  cidr_block = var.KKE_VPC_CIDR
+  tags = {
+    Name = "datacenter-priv-vpc"
+  }
+}
+
+# Create the private subnet
+resource "aws_subnet" "datacenter_priv_subnet" {
+  vpc_id                  = aws_vpc.datacenter_priv_vpc.id
+  cidr_block              = var.KKE_SUBNET_CIDR
+  map_public_ip_on_launch = false
+  tags = {
+    Name = "datacenter-priv-subnet"
+  }
+}
+
+# Create a security group
+resource "aws_security_group" "datacenter_priv_sg" {
+  name        = "datacenter-priv-sg"
+  description = "Allow all traffic within the VPC"
+  vpc_id      = aws_vpc.datacenter_priv_vpc.id
+
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = [var.KKE_VPC_CIDR]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# Find a suitable AMI (Amazon Machine Image)
+data "aws_ami" "amazon_linux" {
+  most_recent = true
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+  }
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+  owners = ["amazon"]
+}
+
+# Provision the EC2 instance
+resource "aws_instance" "datacenter_priv_ec2" {
+  ami           = data.aws_ami.amazon_linux.id
+  instance_type = "t2.micro"
+  subnet_id     = aws_subnet.datacenter_priv_subnet.id
+  vpc_security_group_ids = [aws_security_group.datacenter_priv_sg.id]
+  tags = {
+    Name = "datacenter-priv-ec2"
+  }
+}
+
+outputs.tf
+
+This file specifies the output variables to display after Terraform has finished applying the configuration. 
+
+output "KKE_vpc_name" {
+  description = "The name of the VPC"
+  value       = aws_vpc.datacenter_priv_vpc.tags.Name
+}
+
+output "KKE_subnet_name" {
+  description = "The name of the subnet"
+  value       = aws_subnet.datacenter_priv_subnet.tags.Name
+}
+
+output "KKE_ec2_private" {
+  description = "The name of the EC2 instance"
+  value       = aws_instance.datacenter_priv_ec2.tags.Name
+}
+
+
+Apply the configuration
+
+terraform init
+
+terraform plan
+
+terraform apply
+
+Verify with terraform plan
+
+This command should return a message similar to "No changes. Your infrastructure matches the configuration."
