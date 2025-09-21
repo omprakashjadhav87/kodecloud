@@ -1,0 +1,58 @@
+A new DevOps Engineer has joined the team and he will be assigned some Jenkins related tasks. Before that, the team wanted to test a simple parameterized job to understand basic 
+functionality of parameterized builds. He is given a simple parameterized job to build in Jenkins. 
+Please find more details below:
+Click on the Jenkins button on the top bar to access the Jenkins UI. Login using username admin and password Adm!n321.
+1. Create a parameterized job which should be named as parameterized-job
+2. Add a string parameter named Stage; its default value should be Build.
+3. Add a choice parameter named env; its choices should be Development, Staging and Production.
+4. Configure job to execute a shell command, which should echo both parameter values (you are passing in the job).
+5. Build the Jenkins job at least once with choice parameter value Development to make sure it passes.
+Note:
+
+1. You might need to install some plugins and restart Jenkins service. So, we recommend clicking on Restart Jenkins when installation is complete and no jobs are running on plugin
+installation/update page i.e update centre. Also, Jenkins UI sometimes gets stuck when Jenkins service restarts in the back end. In this case, please make sure to refresh the UI page.
+2. For these kind of scenarios requiring changes to be done in a web UI, please take screenshots so that you can share it with us for review in case your task is marked incomplete. 
+You may also consider using a screen recording software such as loom.com to record and share your work.
+
+Solutions:- 
+
+ I can help guide you through setting up a parameterized job in Jenkins. Here are the steps:
+
+ Access Jenkins UI:
+
+Click on the Jenkins button on the top bar.
+Login using the username admin and password Adm!n321.
+Create a Parameterized Job:
+
+From the Jenkins dashboard, click on New Item.
+Enter parameterized-job as the name.
+Select Freestyle project and click OK.
+Add Parameters:
+
+In the job configuration page, scroll down to This project is parameterized and check the box.
+Click Add Parameter and select String Parameter.
+Name: Stage
+Default Value: Build
+Click Add Parameter again and select Choice Parameter.
+Name: env
+Choices: Development, Staging, Production
+Configure Shell Command:
+
+Scroll down to Build section.
+Click Add build step and select Execute shell.
+Enter the following command:
+
+=========================
+
+echo "Stage: $Stage"
+echo "Environment: $env"
+==========================
+
+Build the Job:
+
+Save the configuration.
+Click Build Now on the left sidebar.
+When prompted, select Development for the env parameter and start the build.
+Verify the Build:
+
+Check the console output of the build to ensure it echoes the parameter values correctly. 😊
