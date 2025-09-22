@@ -1,0 +1,86 @@
+The monitoring team wants to improve observability into the streaming infrastructure. Your task is to implement a solution using Amazon Kinesis and CloudWatch. 
+The team wants to ensure that if write throughput exceeds provisioned limits, an alert is triggered immediately.
+
+As a member of the Nautilus DevOps Team, perform the following tasks using Terraform:
+
+Create a Kinesis Data Stream: Name the stream devops-kinesis-stream with a shard count of 1.
+
+Enable Monitoring: Enable shard-level metrics for the stream to track ingestion and throughput errors.
+
+Create a CloudWatch Alarm: Name the alarm devops-kinesis-alarm and monitor the WriteProvisionedThroughputExceeded metric. The alarm should trigger if the metric exceeds a threshold of 1.
+
+Ensure Alerting: Configure the CloudWatch alarm to detect write throughput issues exceeding provisioned limits.
+
+Create the main.tf file (do not create a separate .tf file) to provision the Kinesis stream, CloudWatch alarm, and ensure alerting.
+
+Create the outputs.tf file with the following variable names to output:
+
+kke_kinesis_stream_name for the Kinesis stream name.
+
+kke_kinesis_alarm_name for the CloudWatch alarm name.
+
+
+Notes:
+
+The Terraform working directory is /home/bob/terraform.
+
+Right-click under the EXPLORER section in VS Code and select Open in Integrated Terminal to launch the terminal.
+
+Before submitting the task, ensure that terraform plan returns No changes. Your infrastructure matches the configuration.
+
+Solutions:-
+
+main.tf
+
+# Configure the AWS Provider
+provider "aws" {
+  region = "us-east-1" # Or your desired AWS region
+}
+
+# Create a Kinesis Data Stream
+resource "aws_kinesis_stream" "devops_kinesis_stream" {
+  name        = "devops-kinesis-stream"
+  shard_count = 1
+  retention_period = 24
+
+  # Enable shard-level monitoring. Use valid metric names.
+  shard_level_metrics = [
+    "WriteProvisionedThroughputExceeded"
+  ]
+}
+
+# Create a CloudWatch Alarm
+resource "aws_cloudwatch_metric_alarm" "devops_kinesis_alarm" {
+  alarm_name          = "devops-kinesis-alarm"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = 1
+  metric_name         = "WriteProvisionedThroughputExceeded"
+  namespace           = "AWS/Kinesis"
+  period              = 60
+  statistic           = "Sum"
+  threshold           = 1
+  alarm_description   = "Alarm for Kinesis WriteProvisionedThroughputExceeded"
+  
+  dimensions = {
+    StreamName = aws_kinesis_stream.devops_kinesis_stream.name
+  }
+}
+
+------------
+
+outputs.tf
+
+# Output the name of the Kinesis stream
+output "kke_kinesis_stream_name" {
+  value = aws_kinesis_stream.devops_kinesis_stream.name
+}
+
+# Output the name of the CloudWatch alarm
+output "kke_kinesis_alarm_name" {
+  value = aws_cloudwatch_metric_alarm.devops_kinesis_alarm.alarm_name
+}
+
+
+terraform init
+terraform apply
+terraform plan
