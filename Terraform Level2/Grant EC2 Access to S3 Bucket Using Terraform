@@ -1,0 +1,149 @@
+The Nautilus DevOps team wants to set up EC2 instances that securely upload application logs to S3 using IAM roles.
+
+Create an EC2 instance named devops-ec2 that can access an S3 bucket securely.
+
+Create an S3 bucket named devops-logs-10456.
+
+Create an IAM role named devops-role with a policy named devops-access-policy allowing S3 PutObject on the above bucket.
+
+Attach the IAM role to the EC2 instance to allow it to upload logs to the bucket.
+
+Create the main.tf (do not create a separate .tf file) to provision the EC2, s3, role and policy.
+
+Create the variables.tffile to declare the following:
+
+KKE_BUCKET_NAME: name of the bucket.
+KKE_POLICY_NAME: name of the policy.
+KKE_ROLE_NAME: name of the role.
+Create the terraform.tfvars file to assign values to variables.
+
+Create a data.tf file to fetch the latest Amazon Linux 2 AMI.
+
+
+Notes:
+
+The Terraform working directory is /home/bob/terraform.
+
+Right-click under the EXPLORER section in VS Code and select Open in Integrated Terminal to launch the terminal.
+
+Before submitting the task, ensure that terraform plan returns No changes. Your infrastructure matches the configuration.
+
+Solutions:-
+
+Here’s a complete Terraform setup to grant EC2 access to an S3 bucket using IAM roles. This includes all required files: main.tf, variables.tf, terraform.tfvars, and data.tf.
+
+main.tf
+
+provider "aws" {
+  region = "us-east-1"
+}
+
+resource "aws_s3_bucket" "devops_logs" {
+  bucket = var.KKE_BUCKET_NAME
+}
+
+resource "aws_iam_role" "devops_role" {
+  name = var.KKE_ROLE_NAME
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Service = "ec2.amazonaws.com"
+      },
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_iam_policy" "devops_access_policy" {
+  name        = var.KKE_POLICY_NAME
+  description = "Allow EC2 to put logs into S3 bucket"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Action = "s3:PutObject",
+      Resource = "${aws_s3_bucket.devops_logs.arn}/*"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "devops_attach" {
+  role       = aws_iam_role.devops_role.name
+  policy_arn = aws_iam_policy.devops_access_policy.arn
+}
+
+resource "aws_instance" "devops_ec2" {
+  ami           = data.aws_ami.amazon_linux.id
+  instance_type = "t2.micro"
+
+  iam_instance_profile = aws_iam_instance_profile.devops_profile.name
+
+  tags = {
+    Name = "devops-ec2"
+  }
+}
+
+resource "aws_iam_instance_profile" "devops_profile" {
+  name = "devops-instance-profile"
+  role = aws_iam_role.devops_role.name
+}
+
+------------------------------------------
+
+variables.tf
+
+variable "KKE_BUCKET_NAME" {
+  type        = string
+  description = "Name of the S3 bucket"
+}
+
+variable "KKE_POLICY_NAME" {
+  type        = string
+  description = "Name of the IAM policy"
+}
+
+variable "KKE_ROLE_NAME" {
+  type        = string
+  description = "Name of the IAM role"
+}
+
+-------------------------------------------------------------
+
+terraform.tfvars
+
+KKE_BUCKET_NAME  = "devops-logs-10456"
+KKE_POLICY_NAME  = "devops-access-policy"
+KKE_ROLE_NAME    = "devops-role"
+
+-----------------------------------------------------------
+
+data.tf
+
+data "aws_ami" "amazon_linux" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  owners = ["amazon"]
+}
+
+---------------------------------------------------
+
+✅ Final Steps
+Run terraform init to initialize the working directory.
+
+Run terraform apply to provision resources.
+
+Run terraform plan to confirm: “No changes. Your infrastructure matches the configuration.
