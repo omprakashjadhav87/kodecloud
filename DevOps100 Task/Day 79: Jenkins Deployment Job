@@ -68,7 +68,8 @@ Open Jenkins go to Plugins and install these: Git, SSH, SSH Credentials, SSH Bui
 
 Create a new job
 
-image
+excute shell
+scp * natasha@ststror01:/var/www/htm
 
 Use Poll SCM to run it every minute
 
