@@ -1,47 +1,206 @@
-The DevOps team was looking for a solution where they want to restart Apache service on all app servers if the deployment goes fine on these servers in Stratos Datacenter. After having a discussion, they came up with a solution to use Jenkins chained builds so that they can use a downstream job for services which should only be triggered by the deployment job. So as per the requirements mentioned below configure the required Jenkins jobs.
-
-
+The DevOps team was looking for a solution where they want to restart Apache service on all app servers if the deployment goes fine on these servers in Stratos Datacenter. 
+After having a discussion, they came up with a solution to use Jenkins chained builds so that they can use a downstream job for services which should only be triggered by 
+the deployment job. So as per the requirements mentioned below configure the required Jenkins jobs.
 
 Click on the Jenkins button on the top bar to access the Jenkins UI. Login using username admin and Adm!n321 password.
-
-
 Similarly you can access Gitea UI on port 8090 and username and password for Git is sarah and Sarah_pass123 respectively. Under user sarah you will find a repository named web.
+Apache is already installed and configured on all app server so no changes are needed there. The doc root /var/www/html on all these app servers is shared among the Storage server 
+under /var/www/html directory.
 
-
-Apache is already installed and configured on all app server so no changes are needed there. The doc root /var/www/html on all these app servers is shared among the Storage server under /var/www/html directory.
-
-
-1. Create a Jenkins job named nautilus-app-deployment and configure it to pull change from the master branch of web repository on Storage server under /var/www/html directory, which is already a local git repository tracking the origin web repository. Since /var/www/html on Storage server is a shared volume so changes should auto reflect on all apps.
-
-
+1. Create a Jenkins job named nautilus-app-deployment and configure it to pull change from the master branch of web repository on Storage server under /var/www/html directory, 
+which is already a local git repository tracking the origin web repository. Since /var/www/html on Storage server is a shared volume so changes should auto reflect on all apps.
 2. Create another Jenkins job named manage-services and make it a downstream job for nautilus-app-deployment job. Things to take care about this job are:
 
-
 a. This job should restart httpd service on all app servers.
-
 b. Trigger this job only if the upstream job i.e nautilus-app-deployment is stable.
 
-
-LB server is already configured. Click on the App button on the top bar to access the app. You should be able to see the latest changes you made. Please make sure the required content is loading on the main URL https://<LBR-URL> i.e there should not be a sub-directory like https://<LBR-URL>/web etc.
-
+LB server is already configured. Click on the App button on the top bar to access the app. You should be able to see the latest changes you made. Please make sure the required 
+content is loading on the main URL https://<LBR-URL> i.e there should not be a sub-directory like https://<LBR-URL>/web etc.
 
 Note:
-
-
-1. You might need to install some plugins and restart Jenkins service. So, we recommend clicking on Restart Jenkins when installation is complete and no jobs are running on plugin installation/update page i.e update centre. Also some times Jenkins UI gets stuck when Jenkins service restarts in the back end so in such case please make sure to refresh the UI page.
-
-
+1. You might need to install some plugins and restart Jenkins service. So, we recommend clicking on Restart Jenkins when installation is complete and no jobs are running on plugin
+installation/update page i.e update centre. Also some times Jenkins UI gets stuck when Jenkins service restarts in the back end so in such case please make sure to refresh the UI page.
 2. Make sure Jenkins job passes even on repetitive runs as validation may try to build the job multiple times.
-
-
 3. Deployment related tasks should be done by sudo user on the destination server to avoid any permission issues so make sure to configure your Jenkins job accordingly.
-
-
-4. For these kind of scenarios requiring changes to be done in a web UI, please take screenshots so that you can share it with us for review in case your task is marked incomplete. You may also consider using a screen recording software such as loom.com to record and share your work.
+4. For these kind of scenarios requiring changes to be done in a web UI, please take screenshots so that you can share it with us for review in case your task is marked incomplete. 
+You may also consider using a screen recording software such as loom.com to record and share your work.
 
 Solutions:- 
+✅ Jenkins Setup Summary
+🔌 Plugins Installed
+Make sure the following plugins are installed and Jenkins is restarted:
 
-Install these Jenkins plugins: SSH, SSH Credentials, SSH Build Agents, Git, Credentials, Pipeline, Publish over SSH
+SSH
+SSH Credentials
+SSH Build Agents
+Git
+Credentials
+Pipeline
+Publish Over SSH
 
 Create Credentials
-https://private-user-images.githubusercontent.com/83917694/369332981-a11bd8ba-c275-4277-bea8-89093edce419.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NTkxMTE2ODIsIm5iZiI6MTc1OTExMTM4MiwicGF0aCI6Ii84MzkxNzY5NC8zNjkzMzI5ODEtYTExYmQ4YmEtYzI3NS00Mjc3LWJlYTgtODkwOTNlZGNlNDE5LnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTA5MjklMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwOTI5VDAyMDMwMlomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTljMDhiODA4YzEzNGRiNTM3NWVkMzMwYTU5OTBlNDFjOTcxY2U5NmMwMGFhNDY2N2I0NGI3NjAzOGIwZjQwMTAmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.EWyq9kfN2W5GSrZdsyq1jPgH_ZF4yitXgwtntakgUTw
+ Credentials Configuration
+Git Credentials
+
+Username: sarah
+Password: Sarah_pass123
+Added under Jenkins → Manage Credentials → Global → Add Credentials
+
+All Apps server and storage server .
+
+Connect to the Storage server
+
+ssh natasha@ststor01
+
+sudo su -
+
+yum install java-17-openjdk -y
+
+ Add Jenkins Node
+
+Go to Manage Jenkins → Nodes → New Node
+Name: ststor01
+Type: Permanent Agent
+Configure remote root directory: /var/www/html
+Launch method: SSH (use SSH credentials)
+
+Check /var/www/html
+
+[root@ststor01 ~]# cd /var/www/html
+[root@ststor01 html]# ls
+index.html
+[root@ststor01 html]# cat index.html 
+Welcome
+[root@ststor01 html]#
+
+Check Gitea index file
+
+Add SSH remote hosts to the System for each App
+
+HostName:- stapp01
+Port:- 22
+credentials:- add  one by one .
+pty: check box
+
+test connetion
+
+6. Add SSH Remote Hosts (App Servers)
+Go to Manage Jenkins → Configure System → Publish Over SSH:
+
+Add each app server with:
+
+Hostname/IP
+SSH credentials
+Remote directory /var/www/html
+use password 
+
+Create Job: nautilus-app-deployment
+
+Go to Jenkins Dashboard → New Item
+Name: nautilus-app-deployment
+Type: Pipeline
+Use this script:
+
+pipeline {
+    agent {
+        label 'ststor01'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Connect to GIT and download the repo code
+                git credentialsId: 'sarah', url: 'http://git.stratos.xfusioncorp.com/sarah/web.git'
+            }
+        }
+        stage('Update Code') {
+            steps {
+                // Pull latest changes from the Git repository
+                sh 'cd /var/www/html && git pull origin master'
+            }
+        }
+    }
+}
+
+----------------------
+
+Then create a new job manage-services as a freestyle project
+
+Build Trigers
+
+build after project build
+Project watch :- nautilus-app-deployment
+triger only build stable
+
+Add this for all Apps
+
+build steps
+exute shell scrpit on remote host
+
+ssh site:- selete all servers one bye one
+
+cmd:
+echo Ir0nM@n | sudo -S systemctl restart httpd
+echo Am3ric@ | sudo -S systemctl restart httpd
+echo BigGr33n | sudo -S systemctl restart httpd
+
+Then run 1st jobs 2nd jobs automatically run as per below logs.
+
+Run it (these are the final logs together with Triggering a new build of manage-services)
+
+Started by user admin
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on ststor01 in /var/www/html/workspace/nautilus-app-deployment
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Checkout)
+[Pipeline] git
+The recommended git tool is: NONE
+using credential sarah
+Fetching changes from the remote Git repository
+Checking out Revision 95386b9b89b6b747ab02fc3774b09684093c2e13 (refs/remotes/origin/master)
+Commit message: "Updated index.html file"
+ > git rev-parse --resolve-git-dir /var/www/html/workspace/nautilus-app-deployment/.git # timeout=10
+ > git config remote.origin.url http://git.stratos.xfusioncorp.com/sarah/web.git # timeout=10
+Fetching upstream changes from http://git.stratos.xfusioncorp.com/sarah/web.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.43.0'
+using GIT_ASKPASS to set credentials 
+ > git fetch --tags --force --progress -- http://git.stratos.xfusioncorp.com/sarah/web.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 95386b9b89b6b747ab02fc3774b09684093c2e13 # timeout=10
+ > git branch -a -v --no-abbrev # timeout=10
+ > git branch -D master # timeout=10
+ > git checkout -b master 95386b9b89b6b747ab02fc3774b09684093c2e13 # timeout=10
+ > git rev-list --no-walk 95386b9b89b6b747ab02fc3774b09684093c2e13 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Update Code)
+[Pipeline] sh
++ cd /var/www/html
++ git pull origin master
+From http://git.stratos.xfusioncorp.com/sarah/web
+ * branch            master     -> FETCH_HEAD
+Already up to date.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Triggering a new build of manage-servicess #2
+Finished: SUCCESS
+
+Double check Apps sudo systemctl status httpd
+
+Open App
+
+you Will seee welcome to kodekolde!
+
+
+
+
+
+
