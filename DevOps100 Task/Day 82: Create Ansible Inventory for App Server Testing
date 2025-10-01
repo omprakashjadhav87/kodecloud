@@ -1,0 +1,37 @@
+The Nautilus DevOps team is testing Ansible playbooks on various servers within their stack. They've placed some playbooks under /home/thor/playbook/ directory on the jump host and now intend to test 
+them on app server 1 in Stratos DC. However, an inventory file needs creation for Ansible to connect to the respective app. Here are the requirements:
+
+
+a. Create an ini type Ansible inventory file /home/thor/playbook/inventory on jump host.
+
+
+b. Include App Server 1 in this inventory along with necessary variables for proper functionality.
+
+
+c. Ensure the inventory hostname corresponds to the server name as per the wiki, for example stapp01 for app server 1 in Stratos DC.
+
+
+Note: Validation will execute the playbook using the command ansible-playbook -i inventory playbook.yml. Ensure the playbook functions properly without any extra arguments.
+
+Solutions:-
+
+Generate a New SSH Key and Copy It to stapp01
+
+ssh-keygen -t rsa -b 2048 -f /home/thor/.ssh/id_rsa
+
+copy to target server
+ssh-copy-id -i /home/thor/.ssh/id_rsa.pub tony@172.16.238.10
+
+Ensure the private key file has strict permissions:
+chmod 600 /home/thor/.ssh/id_rsa
+
+inventory file
+
+[app_servers]
+stapp01 ansible_host=172.16.238.10 ansible_user=tony ansible_ssh_private_key_file=/home/thor/.ssh/id_rsa
+
+validate the connection
+ansible -i inventory stapp01 -m ping
+
+execute the playbook
+ansible-playbook -i inventory playbook.yml
