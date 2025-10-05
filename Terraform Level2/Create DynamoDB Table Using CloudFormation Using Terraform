@@ -1,0 +1,88 @@
+The Nautilus DevOps team wants to automate infrastructure provisioning using CloudFormation. As part of the stack setup, they need to create a DynamoDB table.
+
+Create a CloudFormation stack named xfusion-dynamodb-stack.
+
+The stack must create a DynamoDB table named xfusion-cf-dynamodb-table.
+
+Use the main.tf file (do not create a separate .tf file) to provision a CloudFormation stack and DynamoDB table. Make sure to add a lifecycle block in main.tf to ignore changes
+to the parameters attribute.
+
+Use the variables.tf file with the following variable names:
+
+KKE_DYNAMODB_TABLE_NAME: Dynamodb table name.
+The locals.tf file is already provided and includes the following:
+
+cf_template_body: A local variable that stores the CloudFormation template body.
+Use the outputs.tf file to output the following:
+
+KKE_stack_name: CloudFormation stack name
+
+Notes:
+
+The Terraform working directory is /home/bob/terraform.
+
+Right-click under the EXPLORER section in VS Code and select Open in Integrated Terminal to launch the terminal.
+
+Before submitting the task, ensure that terraform plan returns No changes. Your infrastructure matches the configuration.
+
+Solutions:-
+
+Step-by-Step File Configuration
+
+variables.tf
+Define the variable for the DynamoDB table name:
+
+variable "KKE_DYNAMODB_TABLE_NAME" {
+  description = "DynamoDB table name"
+  type        = string
+  default     = "xfusion-cf-dynamodb-table"
+}
+
+===============================================
+
+2. main.tf
+
+Create the CloudFormation stack using aws_cloudformation_stack:
+
+provider "aws" {
+  region = "us-east-1" # Change if needed
+}
+
+resource "aws_cloudformation_stack" "dynamodb_stack" {
+  name          = "xfusion-dynamodb-stack"
+  template_body = local.cf_template_body
+
+  parameters = {
+    TableName = var.KKE_DYNAMODB_TABLE_NAME
+  }
+
+  lifecycle {
+    ignore_changes = [parameters]
+  }
+}
+
+==========================================
+
+outputs.tf
+
+Output the CloudFormation stack name:
+output "KKE_stack_name" {
+  description = "CloudFormation stack name"
+  value       = aws_cloudformation_stack.dynamodb_stack.name
+}
+
+==============================================
+
+🚀 Final Steps
+
+Initialize Terraform:
+terraform init
+
+Apply the Configuration:
+terraform apply
+
+Verify with Plan:
+terraform plan
+
+You should see:
+No changes. Your infrastructure matches the configuration.
