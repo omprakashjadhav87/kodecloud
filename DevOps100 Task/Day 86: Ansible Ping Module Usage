@@ -1,0 +1,47 @@
+The Nautilus DevOps team is planning to test several Ansible playbooks on different app servers in Stratos DC. Before that, some pre-requisites must be met. Essentially,
+the team needs to set up a password-less SSH connection between Ansible controller and Ansible managed nodes. One of the tickets is assigned to you; please complete the task 
+as per details mentioned below:
+
+a. Jump host is our Ansible controller, and we are going to run Ansible playbooks through thor user from jump host.
+b. There is an inventory file /home/thor/ansible/inventory on jump host. Using that inventory file test Ansible ping from jump host to App Server 2, make sure ping works.
+
+Solutions:-
+
+Solution 
+
+1.  check the ansible inventory file on jump server host
+  CD /home/thor/ansible/inventory.
+
+2. Generate a SSH key on Jump Host . Please note it should Thor user.
+
+     ssh-keygen -t rsa -b 2048
+
+Copy SSH key to setup password-less authentication to the host
+ssh-copy-id steve@stapp02
+
+4.  Validate the task by below command 
+
+ansible stapp02 -m ping -i inventory -v
+==================================================================================================================================================================
+getting this error .
+thor@jumphost ~/ansible$ ansible stapp01 -m ping -i inventory -v
+Using /etc/ansible/ansible.cfg as config file
+stapp01 | UNREACHABLE! => {
+    "changed": false,
+    "msg": "Invalid/incorrect password: Warning: Permanently added '172.16.238.10' (ED25519) to the list of known hosts.\r\nPermission denied, please try again.",
+    "unreachable": true
+}
+====================================================================================================================================================================
+
+Updated Inventory .
+check the inventory file , name of the users are missing
+
+
+stapp01 ansible_host=172.16.238.10 ansible_user=tony ansible_ssh_pass=Ir0nM@n
+stapp02 ansible_host=172.16.238.11 ansible_user=steve ansible_ssh_pass=Am3ric@
+stapp03 ansible_host=172.16.238.12 ansible_user=banner ansible_ssh_pass=BigGr33n
+
+
+Run the Ansible Command
+
+ansible stapp01 -m ping -i inventory -vvv
