@@ -26,53 +26,67 @@ Before submitting the task, ensure that terraform plan returns No changes. Your 
 
 Solutions:-
 
+**Removing the base64encode function**.
+
 main.tf
 
-provider "aws" {
-  region = "us-east-1"
-}
+# 1. Create a symmetric KMS key
+resource "aws_kms_key" "devops-kms-key" {
+  key_usage                = "ENCRYPT_DECRYPT"
+  customer_master_key_spec = "SYMMETRIC_DEFAULT"
 
-resource "aws_kms_key" "devops_kms_key" {
-  description             = "KMS key for encrypting sensitive data"
-  deletion_window_in_days = 10
-  enable_key_rotation     = true
-}
-
-resource "null_resource" "encrypt_decrypt" {
-  provisioner "local-exec" {
-    command = <<EOT
-# Encrypt the file
-aws kms encrypt \
-  --key-id ${aws_kms_key.devops_kms_key.key_id} \
-  --plaintext fileb:///home/bob/terraform/SensitiveData.txt \
-  --output text \
-  --query CiphertextBlob | base64 --decode > /home/bob/terraform/EncryptedData.bin
-
-# Decrypt the file
-aws kms decrypt \
-  --ciphertext-blob fileb:///home/bob/terraform/EncryptedData.bin \
-  --output text \
-  --query Plaintext | base64 --decode > /home/bob/terraform/DecryptedData.txt
-
-# Verify match
-diff /home/bob/terraform/SensitiveData.txt /home/bob/terraform/DecryptedData.txt && echo "✅ Files match" || echo "❌ Files differ"
-EOT
-    interpreter = ["/bin/bash", "-c"]
+  tags = {
+    Name = "devops-kms-key"
   }
-
-  depends_on = [aws_kms_key.devops_kms_key]
 }
 
-==================================================
+resource "aws_kms_alias" "alias" {
+  name          = "alias/devops-kms-key"
+  target_key_id = aws_kms_key.devops-kms-key.id
+}
 
+# 2. Read plaintext from SensitiveData.txt
+locals {
+  sensitive_file_path = "/home/bob/terraform/SensitiveData.txt"
+  sensitive_plaintext = file(local.sensitive_file_path)
+}
+
+# 3. Encrypt the plaintext using KMS
+resource "aws_kms_ciphertext" "encrypted_data" {
+  key_id    = aws_kms_key.devops-kms-key.arn
+  plaintext = local.sensitive_plaintext
+}
+
+# 4. Save ciphertext to EncryptedData.bin (already base64-encoded)
+resource "local_file" "encrypted_file" {
+  filename = "/home/bob/terraform/EncryptedData.bin"
+  content  = aws_kms_ciphertext.encrypted_data.ciphertext_blob
+}
+
+# 5. Decrypt the ciphertext to verify using new data source aws_kms_secrets
+data "aws_kms_secrets" "decrypted_data" {
+  secret {
+    name    = "decrypted"
+    payload = aws_kms_ciphertext.encrypted_data.ciphertext_blob
+  }
+}
+
+# 6. Save decrypted data for verification
+resource "local_file" "decrypted_file" {
+  filename = "/home/bob/terraform/DecryptedData.txt"
+  content  = data.aws_kms_secrets.decrypted_data.plaintext["decrypted"]
+}
+
+=======================================================================================
 outputs.tf
 
 output "kke_kms_key_name" {
-  value = aws_kms_key.devops_kms_key.key_id
+  description = "Name of the KMS key created"
+  value       = aws_kms_key.devops-kms-key.tags["Name"]
 }
 
-=======================================================
+====================================================================================
 
-terraform init and terraform apply
-
-Ensure terraform plan returns No changes before submission.
+terraform init
+terraform apply
+terraform plan
