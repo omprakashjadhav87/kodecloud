@@ -1,0 +1,78 @@
+The Nautilus DevOps team is focusing on improving their data security by using AWS KMS. Your task is to create a KMS key and manage the encryption and decryption of a pre-existing 
+sensitive file using the KMS key.
+
+Specific Requirements:
+
+Create a symmetric KMS key named devops-kms-key to manage encryption and decryption.
+
+Encrypt the provided SensitiveData.txt file (located in /home/bob/terraform), base64 encode the ciphertext, and save the encrypted version as EncryptedData.bin in the /home/bob/terraform
+directory.
+
+Try to decrypt the same and verify that the decrypted data matches the original file.
+
+Create main.tf file (do not create a separate .tf file) to provision a KMS key, encrypt and decrypt the file.
+
+Create outputs.tf file to output the following:
+
+kke_kms_key_name: name of the key created.
+
+Notes:
+
+The Terraform working directory is /home/bob/terraform.
+
+Right-click under the EXPLORER section in VS Code and select Open in Integrated Terminal to launch the terminal.
+
+Before submitting the task, ensure that terraform plan returns No changes. Your infrastructure matches the configuration.
+
+Solutions:-
+
+main.tf
+
+provider "aws" {
+  region = "us-east-1"
+}
+
+resource "aws_kms_key" "devops_kms_key" {
+  description             = "KMS key for encrypting sensitive data"
+  deletion_window_in_days = 10
+  enable_key_rotation     = true
+}
+
+resource "null_resource" "encrypt_decrypt" {
+  provisioner "local-exec" {
+    command = <<EOT
+# Encrypt the file
+aws kms encrypt \
+  --key-id ${aws_kms_key.devops_kms_key.key_id} \
+  --plaintext fileb:///home/bob/terraform/SensitiveData.txt \
+  --output text \
+  --query CiphertextBlob | base64 --decode > /home/bob/terraform/EncryptedData.bin
+
+# Decrypt the file
+aws kms decrypt \
+  --ciphertext-blob fileb:///home/bob/terraform/EncryptedData.bin \
+  --output text \
+  --query Plaintext | base64 --decode > /home/bob/terraform/DecryptedData.txt
+
+# Verify match
+diff /home/bob/terraform/SensitiveData.txt /home/bob/terraform/DecryptedData.txt && echo "✅ Files match" || echo "❌ Files differ"
+EOT
+    interpreter = ["/bin/bash", "-c"]
+  }
+
+  depends_on = [aws_kms_key.devops_kms_key]
+}
+
+==================================================
+
+outputs.tf
+
+output "kke_kms_key_name" {
+  value = aws_kms_key.devops_kms_key.key_id
+}
+
+=======================================================
+
+terraform init and terraform apply
+
+Ensure terraform plan returns No changes before submission.
