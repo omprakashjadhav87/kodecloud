@@ -1,0 +1,230 @@
+The Nautilus DevOps team has been tasked with creating an internal information portal for public access. As part of this project, they need to host a static website on AWS using 
+an S3 bucket. The S3 bucket must be configured for public access to allow external users to access the static website directly via the S3 website URL.
+
+Your task is to create a Terraform module named s3-static-site to handle the creation and configuration of the S3 bucket. For uploading the index.html file, you may use either 
+Terraform or the AWS CLI.
+
+Task Requirements:
+
+The module directory /home/bob/terraform/modules/s3-static-site/ is already created, configure the module to perform the following tasks:
+
+Create an S3 bucket named devops-web-17012.
+
+Configure the S3 bucket for static website hosting with index.html as the index document.
+
+Allow public access to the bucket by attaching the appropriate bucket policy.
+
+Within the module, use a variables.tf file that must define the following variables: bucket_name and index_document. These values should not be hardcoded directly into resource definitions. You may add other variables if needed to avoid hardcoding. Use these variables in main.tf for configuring the bucket.
+
+Within the module use outputs.tf file to output the following:
+
+website_url: S3 static website url
+Your S3 website url should look something like the following, aws:4566 refers to the mock AWS endpoint configured in your environment (e.g., using LocalStack):
+
+http://aws:4566/<bucketname>/index.html
+The S3 bucket must be tagged with the key Project and the value StaticWeb.
+
+In the root main.tf, call the s3-static-site module using the required input variables (bucket_name, index_document).
+
+Upload the index.html file from /home/bob/terraform directory to the S3 bucket. This can be done using either the AWS CLI or Terraform (aws_s3_object).
+
+
+Notes:
+
+The Terraform working directory is /home/bob/terraform.
+
+Right-click under the EXPLORER section in VS Code and select Open in Integrated Terminal to launch the terminal.
+
+Before submitting the task, ensure that terraform plan returns No changes. Your infrastructure matches the configuration.
+
+Solutions:-
+
+This task requires setting up a Terraform module to create and configure an S3 bucket for static website hosting and then using a root configuration to deploy the website.
+
+The bucket name required is nautilus-web-15432.
+
+1. Module Configuration (/home/bob/terraform/modules/s3-static-site/)
+
+cd /home/bob/terraform/modules/s3-static-site/
+
+variables.tf
+
+variable "bucket_name" {
+  description = "The name for the S3 bucket."
+  type        = string
+}
+
+variable "index_document" {
+  description = "The index document for the static website hosting."
+  type        = string
+}
+
+variable "project_tag_value" {
+  description = "The value for the Project tag."
+  type        = string
+  default     = "StaticWeb"
+}
+
+======================================================
+
+main.tf (Module)
+
+Create the S3 bucket, configure the static website, public access, and attach the public read policy.
+
+resource "aws_s3_bucket" "static_site" {
+  bucket = var.bucket_name
+  tags = {
+    Project = var.project_tag_value
+  }
+}
+
+# 1. Configure the bucket for static website hosting
+resource "aws_s3_bucket_website_configuration" "static_site_config" {
+  bucket = aws_s3_bucket.static_site.id
+
+  index_document {
+    suffix = var.index_document
+  }
+}
+
+# 2. Set ACL to public-read (required for the website to serve objects)
+resource "aws_s3_bucket_acl" "static_site_acl" {
+  bucket = aws_s3_bucket.static_site.id
+  acl    = "public-read"
+}
+
+# 3. Explicitly disable the Public Access Block
+resource "aws_s3_bucket_public_access_block" "static_site_access" {
+  bucket                  = aws_s3_bucket.static_site.id
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
+# 4. Define the Bucket Policy to allow s3:GetObject for everyone
+data "aws_iam_policy_document" "public_read_policy" {
+  statement {
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+
+    actions = [
+      "s3:GetObject",
+    ]
+
+    resources = [
+      "${aws_s3_bucket.static_site.arn}/*",
+    ]
+  }
+}
+
+resource "aws_s3_bucket_policy" "static_site_policy" {
+  bucket = aws_s3_bucket.static_site.id
+  policy = data.aws_iam_policy_document.public_read_policy.json
+}
+
+=====================================================================
+
+outputs.tf (Module)
+
+output "website_url" {
+  description = "The URL for the S3 static website."
+  # Use the specific format required by the task
+  value       = "http://aws:4566/${aws_s3_bucket.static_site.id}/${var.index_document}"
+}
+
+output "bucket_name" {
+  description = "The name of the created S3 bucket."
+  # Reference the actual bucket attribute
+  value       = aws_s3_bucket.static_site.bucket
+}
+
+output "index_document" {
+  description = "The index document used for static website hosting."
+  # Reference the input variable
+  value       = var.index_document
+}
+
+
+=============================================================
+
+2. Root Configuration (/home/bob/terraform/)
+
+main.tf
+
+module "static_site" {
+  source           = "./modules/s3-static-site"
+  bucket_name      = "devops-web-17012" # Required bucket name
+  index_document   = "index.html"        # Required index document
+}
+
+# Upload the index.html file to the S3 bucket using Terraform
+resource "aws_s3_object" "index_file" {
+  # Use outputs from the module to reference the bucket name and key
+  bucket       = module.static_site.bucket_name
+  key          = module.static_site.index_document
+  source       = "./index.html" # Path relative to the root directory
+  content_type = "text/html"
+  acl          = "public-read"  # Must be public-read
+}
+
+====================================================
+
+explicitly define a pass-through output in the root outputs.tf file.
+
+Create a file named /home/bob/terraform/outputs.tf and link the module output:
+
+outputs.tf
+
+# /home/bob/terraform/outputs.tf (Root Directory)
+
+output "website_url" {
+  description = "The S3 Static Website URL."
+  value       = module.static_site.website_url
+}
+
+=================================================
+
+Execution Steps
+
+Initialize: Run terraform init in /home/bob/terraform.
+
+Apply: Run terraform apply to create the infrastructure.
+
+Verify: After a successful apply, run terraform plan to ensure it returns No changes. Your infrastructure matches the configuration.
+
+
+Upload Using AWS CLI ( Run on same terrafoem terminal.
+
+aws --endpoint-url=http://aws:4566 s3 cp /home/bob/terraform/index.html s3://devops-web-17012/index.html --acl public-read
+
+
+This command:
+
+Uploads the file to the bucket
+
+Sets it to be publicly accessible
+
+Works with mock AWS endpoints like LocalStack
+
+That's great! Since the terraform plan returned "No changes. Your infrastructure matches the configuration," the task is considered successfully completed according to the requirements.
+
+
+===============================================================
+This confirms the following were deployed:
+
+S3 Bucket: devops-web-17012
+
+Configuration: Static website hosting enabled with index.html.
+
+Public Access: Appropriate bucket policy and access block settings are attached.
+
+Tagging: The bucket is tagged with Project: StaticWeb.
+
+Content: The index.html file is uploaded.
+
+Output: The website_url is available in the Terraform state.
+
+You can now submit your work.
