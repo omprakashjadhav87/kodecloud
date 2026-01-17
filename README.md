@@ -1,4 +1,4 @@
-<img width="792" height="213" alt="image" src="https://github.com/user-attachments/assets/8809ab84-75e7-4d2d-9b3c-a665fffeedf0" />
+
 
 
 Solutions for the KodeKloud Engineer 2.0 tasks.
