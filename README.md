@@ -73,6 +73,29 @@ Infra details: https://kodekloudhub.github.io/kodekloud-engineer/docs/projects/n
 
 
 
+<img width="792" height="122" alt="image" src="https://github.com/user-attachments/assets/bbc70a2d-c499-48b5-8f26-bf92ddd7da41" />
+<img width="783" height="447" alt="image" src="https://github.com/user-attachments/assets/68bca48b-efdb-48e5-ad29-ec5cb5076e1a" />
+<img width="788" height="492" alt="image" src="https://github.com/user-attachments/assets/f3fdca91-e4d2-4e1f-8151-3f71d905fcf2" />
+<img width="785" height="516" alt="image" src="https://github.com/user-attachments/assets/ad49b34c-a9ce-4d3a-9161-15d046c5d71b" />
+<img width="791" height="482" alt="image" src="https://github.com/user-attachments/assets/f6223fa1-5988-4e26-aa98-202ce1de2be4" />
+<img width="792" height="493" alt="image" src="https://github.com/user-attachments/assets/7e9186b6-b666-4e6f-9b67-23f76590d5fc" />
+<img width="787" height="488" alt="image" src="https://github.com/user-attachments/assets/f9c2ef24-2be0-4f28-a2af-90134c18b70b" />
+<img width="791" height="513" alt="image" src="https://github.com/user-attachments/assets/3eca976e-3efc-4895-9745-bccfe22d094f" />
+<img width="789" height="492" alt="image" src="https://github.com/user-attachments/assets/468cdb49-554c-46a1-8f82-0a89732ffbf9" />
+<img width="787" height="492" alt="image" src="https://github.com/user-attachments/assets/2d429c87-93b1-40df-801a-061e8f02e9c3" />
+<img width="788" height="492" alt="image" src="https://github.com/user-attachments/assets/828d9aed-7b6c-4aef-9a24-7de3169ad3ae" />
+<img width="793" height="482" alt="image" src="https://github.com/user-attachments/assets/cd44d6cf-fd25-4966-9d7f-bdc657518e59" />
+
+
+
+
+
+
+
+
+
+
+
 
 
 
